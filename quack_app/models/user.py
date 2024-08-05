@@ -14,9 +14,30 @@ class User(AbstractUser):
     profile_pic = models.ImageField(upload_to="profile_pics/", null=True, blank=True)
     location = models.CharField(max_length=100, blank=True)
     birth_date = models.DateTimeField(null=True, blank=True)
+    following = models.ManyToManyField("self", symmetrical=False, related_name="user_following")
+    followers = models.ManyToManyField("self", symmetrical=False, related_name="user_followers")
+
 
     USERNAME_FIELD = 'handle'
     REQUIRED_FIELDS = ['name', 'email']
+
+    def follow(self, user):
+        """Seguir um usuário"""
+        if user != self:
+            self.following.add(user)
+    
+    def unfollow(self, user):
+        """Deixar de seguir um usuário"""
+        if user != self:
+            self.following.remove(user)
+
+    def is_following(self, user):
+        """Verifica se está seguindo um usuário"""
+        return self.following.filter(pk=user.pk).exists()
+    
+    def is_followed_by(self, user):
+        """Verifica se é seguido pelo usuário"""
+        return self.followers.filter(pk=user.pk).exists()
 
     def save(self, *args, **kwargs):
         if not self.username:
