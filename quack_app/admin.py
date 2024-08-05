@@ -1,25 +1,63 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-
-from quack_app.models.post import Post
-from .models import User  # Ajuste conforme o nome do seu modelo
+from quack_app.models import User, Post
 
 class MyUserAdmin(BaseUserAdmin):
     model = User
+
     fieldsets = (
-        (None, {'fields': ('handle', 'name', 'profile_picture', 'bio')}),
-        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'user_permissions')}),
-        ('Important dates', {'fields': ('last_login', 'date_joined')}),
+        (None, {'fields': ('handle', 'password')}),
+        (
+            'Informações Pessoais',
+            {
+                'fields': (
+                    'name',
+                    'email',
+                    'bio',
+                    'profile_pic',
+                    'location',
+                    'birth_date',
+                )
+            },
+        ),
+        (
+            'Permissões',
+            {
+                'fields': (
+                    'is_active',
+                    'is_staff',
+                    'is_superuser',
+                    'groups',
+                    'user_permissions',
+                )
+            },
+        ),
+        ('Datas Importantes', {'fields': ('last_login', 'date_joined')}),
     )
+
     add_fieldsets = (
-        (None, {
-            'classes': ('wide',),
-            'fields': ('handle', 'name', 'profile_picture', 'bio', 'password1', 'password2'),
-        }),
+        (
+            None,
+            {
+                'classes': ('wide',),
+                'fields': (
+                    'handle',
+                    'name',
+                    'email',
+                    'password1',
+                    'password2',
+                    'profile_pic',
+                    'bio',
+                    'location',
+                    'birth_date',
+                ),
+            },
+        ),
     )
-    list_display = ('handle', 'name', 'is_staff')
-    search_fields = ('handle', 'name')
-    ordering = ('handle',)
+
+    list_display = ('name', 'handle', 'email', 'is_staff')
+    search_fields = ('name', 'handle', 'email')
+    ordering = ('name',)
 
 admin.site.register(User, MyUserAdmin)
 admin.site.register(Post)
