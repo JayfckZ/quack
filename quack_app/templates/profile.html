@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quack - Perfil de {{ user.name }}</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            background-color: #ffffff;
+            color: #333333;
+        }
+        .navbar {
+            background-color: #FFEB3B;
+            margin-bottom: 20px;
+        }
+        .navbar-brand {
+            color: #000000 !important;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        .navbar-brand .fa-duck {
+            font-size: 24px; 
+            margin-right: 10px; 
+        }
+        .navbar-nav .nav-link {
+            color: #000000 !important; 
+        }
+        .navbar-nav .nav-link.active {
+            font-weight: bold;
+        }
+        .container {
+            max-width: 1200px;
+        }
+        .content {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .footer {
+            background-color: #FFEB3B;
+            color: #000000;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        .profile-header {
+            display: flex;
+            align-items: center;
+        }
+        .profile-header img {
+            border-radius: 50%;
+            margin-right: 20px;
+        }
+        .profile-info {
+            margin-top: 20px;
+        }
+        .quack {
+            border-bottom: 1px solid #e6ecf0;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+        .quack:last-child {
+            border-bottom: none;
+        }
+        .quack-user {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .quack-content {
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <a class="navbar-brand" href="#">
+            <i class="fas fa-duck"></i> Quack
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Alternar navegação">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Início</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Explorar</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Notificações</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Mensagens</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="content">
+            <div class="profile-header">
+                <img src="{{ user.profile_pic.url }}" alt="Profile Picture" width="150" height="150">
+                <h1>{{ user.name }} (@{{ user.handle }})</h1>
+            </div>
+            <div class="profile-info">
+                <p><strong>Bio:</strong> {{ user.bio }}</p>
+                <p><strong>Followers:</strong> {{ user.followers.count }}</p>
+                <p><strong>Following:</strong> {{ user.following.count }}</p>
+                <p><strong>Location:</strong> {{ user.location }}</p>
+                <p><strong>Birth Date:</strong> {{ user.birth_date }}</p>
+            </div>
+            <div id="quacks">
+                <h2>Quacks</h2>
+                {% for quack in quacks %}
+                <div class="quack">
+                    <span class="quack-user">{{ quack.user.name }}</span>
+                    <span class="quack-user">@{{ quack.user.handle }}</span>
+                    <div class="quack-content">{{ quack.content }}</div>
+                    <span class="quack-time">{{ quack.created_at|date:"H:i" }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        &copy; 2024 Quack. Todos os direitos reservados.
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
