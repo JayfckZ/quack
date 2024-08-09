@@ -10,7 +10,7 @@ def home(request):
 
 def profile(request, handle):
     user = get_object_or_404(User, handle=handle)
-    quacks = Post.objects.filter(user=user)
+    quacks = Post.objects.filter(user=user).order_by("-created_at")
     return render(request, "profile.html", {"user": user, "quacks": quacks})
 
 
