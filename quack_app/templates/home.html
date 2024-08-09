@@ -56,6 +56,15 @@
         .headernav i{
             overflow-x: visible !important;
         }
+        .like-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .like-button.liked i {
+            color: rgb(255, 234, 0);
+        }
         @media (width < 992px) {
             * {
                 overflow-x: clip;
@@ -167,9 +176,9 @@
                                     <div class="me-3">
                                         <i class="bi bi-chat-right-text"></i> {{ quack.total_comments }}
                                     </div>
-                                    <div>
-                                        <i class="bi bi-heart"></i> {{ quack.total_likes }}
-                                    </div>
+                                    <button class="like-button {% if user in quack.likes.all %}liked{% endif %}" data-post-id="{{ quack.id }}">
+                                        <i class="bi { 'bi-heart-fill' if user in quack.likes.all else 'bi-heart' }"></i> {{ quack.total_likes }}
+                                    </button>
                                 </div>
                             </article>
                         {% empty %}
@@ -199,9 +208,9 @@
                                     <div class="me-3">
                                         <i class="bi bi-chat-right-text"></i> {{ quack.total_comments }}
                                     </div>
-                                    <div>
-                                        <i class="bi bi-heart"></i> {{ quack.total_likes }}
-                                    </div>
+                                    <button class="like-button {% if user in quack.likes.all %}liked{% endif %}" data-post-id="{{ quack.id }}">
+                                        <i class="bi { 'bi-heart-fill' if user in quack.likes.all else 'bi-heart' }"></i> {{ quack.total_likes }}
+                                    </button>
                                 </div>
                             </article>
                         {% empty %}
@@ -226,6 +235,7 @@
                             <li class="list-group-item"><i class="bi bi-dot"></i>Reestilização da Página Home</li>
                             <li class="list-group-item"><i class="bi bi-dot"></i>Reestilização da Página de Usuário</li>
                             <li class="list-group-item"><i class="bi bi-dot"></i>Reestilização da Página de Post</li>
+                            <li class="list-group-item"><i class="bi bi-dot"></i>Curtidas em Posts</li>
                         </ul>
                     </div>
                 </div>
@@ -281,6 +291,51 @@
         btnBack.addEventListener("click", () => {
             search.classList.add('d-none')
         })
+
+        document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.like-button').forEach(button => {
+            const liked = button.classList.contains('liked')
+            const icon = button.querySelector('i');
+            icon.className = liked ? 'bi bi-heart-fill' : 'bi bi-heart';
+            
+            button.addEventListener('click', function() {
+                const postId = this.dataset.postId;
+                fetch(`/like_post/${postId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert('Você precisa estar logado para curtir posts.')
+                    } else {
+                        this.classList.toggle('liked', data.liked)
+                        const iconClass = data.liked ? 'bi bi-heart-fill' : 'bi bi-heart'
+                        this.querySelector('i').className = iconClass;
+                        this.querySelector('i').nextSibling.textContent = ` ${data.total_likes}`
+                    }
+                })
+                .catch(error => console.error('Erro ao processar a solicitação:', error))
+            })
+        })
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';')
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim()
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1))
+                        break
+                    }
+                }
+            }
+            return cookieValue
+        }
+    })
     </script>
 </body>
 </html>

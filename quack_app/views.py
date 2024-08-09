@@ -1,4 +1,5 @@
 from django.shortcuts import redirect, render, get_object_or_404
+from django.http import JsonResponse
 from .models import User, Post, CommentForm, Comment
 
 
@@ -30,3 +31,16 @@ def post_detail(request, post_id):
     return render(
         request, "post_detail.html", {"post": post, "comments": comments, "form": form}
     )
+
+
+def like_post(request, post_id):
+    if request.user.is_authenticated:
+        post = get_object_or_404(Post, id=post_id)
+        if request.user in post.likes.all():
+            post.likes.remove(request.user)
+            liked = False
+        else:
+            post.likes.add(request.user)
+            liked = True
+        return JsonResponse({"liked": liked, "total_likes": post.total_likes()})
+    return JsonResponse({'error': 'Not authenticated'}, status=401)
