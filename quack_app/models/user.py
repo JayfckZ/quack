@@ -49,6 +49,12 @@ class User(AbstractUser):
         """Verifica se é seguido pelo usuário"""
         return self.followers.filter(pk=user.pk).exists()
 
+    def total_following(self):
+        return self.user_following.count()
+    
+    def total_followers(self):
+        return self.user_followers.count()
+
     def save(self, *args, **kwargs):
         if not self.username:
             self.username = self.handle
