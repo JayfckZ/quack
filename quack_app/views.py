@@ -1,5 +1,5 @@
 from django.shortcuts import redirect, render, get_object_or_404
-from .models import User, Post, CommentForm
+from .models import User, Post, CommentForm, Comment
 
 
 # Create your views here.
@@ -11,7 +11,8 @@ def home(request):
 def profile(request, handle):
     user = get_object_or_404(User, handle=handle)
     quacks = Post.objects.filter(user=user).order_by("-created_at")
-    return render(request, "profile.html", {"user": user, "quacks": quacks})
+    comments = Comment.objects.filter(user=user).order_by("-created_at")
+    return render(request, "profile.html", {"user": user, "quacks": quacks, "comments": comments})
 
 
 def post_detail(request, post_id):

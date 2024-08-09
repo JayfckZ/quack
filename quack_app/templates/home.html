@@ -160,20 +160,20 @@
                                         <label class="fs-6 d-inline-block text-truncate">@{{ quack.user.handle }}</label>
                                     </div>
                                 </a>
-                            <a class="text-decoration-none link-dark" href="{% url 'post_detail' post_id=quack.id %}">
-                                <p class="m-0">{{ quack.content }}</p>
-                            </a>
-                            <div class="d-flex justify-content-end counters">
-                                <div class="me-3">
-                                    <i class="bi bi-chat-right-text"></i> {{ quack.total_comments }}
+                                <a class="text-decoration-none link-dark" href="{% url 'post_detail' post_id=quack.id %}">
+                                    <p class="m-0">{{ quack.content }}</p>
+                                </a>
+                                <div class="d-flex justify-content-end counters">
+                                    <div class="me-3">
+                                        <i class="bi bi-chat-right-text"></i> {{ quack.total_comments }}
+                                    </div>
+                                    <div>
+                                        <i class="bi bi-heart"></i> {{ quack.total_likes }}
+                                    </div>
                                 </div>
-                                <div>
-                                    <i class="bi bi-heart"></i> {{ quack.total_likes }}
-                                </div>
-                            </div>
-                        </article>
+                            </article>
                         {% empty %}
-                        <p>Nenhum post disponível.</p>
+                            <p>Nenhum post disponível.</p>
                         {% endfor %}
                     </div>
                 </div>
@@ -192,20 +192,20 @@
                                         <label class="fs-6 d-inline-block text-truncate">@{{ quack.user.handle }}</label>
                                     </div>
                                 </a>
-                            <a class="text-decoration-none link-dark" href="{% url 'post_detail' post_id=quack.id %}">
-                                <p class="m-0">{{ quack.content }}</p>
-                            </a>
-                            <div class="d-flex justify-content-end counters">
-                                <div class="me-3">
-                                    <i class="bi bi-chat-right-text"></i> {{ quack.total_comments }}
+                                <a class="text-decoration-none link-dark" href="{% url 'post_detail' post_id=quack.id %}">
+                                    <p class="m-0">{{ quack.content }}</p>
+                                </a>
+                                <div class="d-flex justify-content-end counters">
+                                    <div class="me-3">
+                                        <i class="bi bi-chat-right-text"></i> {{ quack.total_comments }}
+                                    </div>
+                                    <div>
+                                        <i class="bi bi-heart"></i> {{ quack.total_likes }}
+                                    </div>
                                 </div>
-                                <div>
-                                    <i class="bi bi-heart"></i> {{ quack.total_likes }}
-                                </div>
-                            </div>
-                        </article>
+                            </article>
                         {% empty %}
-                        <p>Nenhum post disponível.</p>
+                            <p>Nenhum post disponível.</p>
                         {% endfor %}
                     </div>
                 </div>
@@ -225,6 +225,7 @@
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item"><i class="bi bi-dot"></i>Reestilização da Página Home</li>
                             <li class="list-group-item"><i class="bi bi-dot"></i>Reestilização da Página de Usuário</li>
+                            <li class="list-group-item"><i class="bi bi-dot"></i>Reestilização da Página de Post</li>
                         </ul>
                     </div>
                 </div>

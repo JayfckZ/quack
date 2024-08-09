@@ -62,25 +62,25 @@
                     </form>
                 </div>
                 {% if comments %}
-                <h2 class="text-center">{{ post.total_comments }} comentário(s)</h2>
+                    <h2 class="text-center">{{ post.total_comments }} comentário(s)</h2>
                 {% endif %}
                 {% for comment in comments %}
-                <article class="p-3 mb-2">
-                    <a href="{% url 'profile' handle=user.handle %}" class="d-flex text-decoration-none link-dark mb-3">
-                        <img class="rounded-circle me-3" src="{{ comment.user.profile_pic.url }}" width="55px" alt="Foto de Perfil">
-                        <div class="d-flex flex-column">
-                            <strong class="fs-5 d-inline-block text-truncate">{{ comment.user.name }}</strong>
-                            <label class="fs-6 d-inline-block text-truncate">@{{ comment.user.handle }}</label>
+                    <article class="p-3 mb-2">
+                        <a href="{% url 'profile' handle=user.handle %}" class="d-flex text-decoration-none link-dark mb-3">
+                            <img class="rounded-circle me-3" src="{{ comment.user.profile_pic.url }}" width="55px" alt="Foto de Perfil">
+                            <div class="d-flex flex-column">
+                                <strong class="fs-5 d-inline-block text-truncate">{{ comment.user.name }}</strong>
+                                <label class="fs-6 d-inline-block text-truncate">@{{ comment.user.handle }}</label>
+                            </div>
+                        </a>
+                        <p class="my-3">{{ comment.content }}</p>
+                        <div class="d-flex justify-content-between counters">
+                            <span class="quack-time me-3 text-secondary">{{ comment.created_at|date:"d/m/Y H:i" }}</span>
                         </div>
-                    </a>
-                    <p class="my-3">{{ comment.content }}</p>
-                    <div class="d-flex justify-content-between counters">
-                        <span class="quack-time me-3 text-secondary">{{ comment.created_at|date:"d/m/Y H:i" }}</span>
-                    </div>
-                </article>
+                    </article>
                 {% empty %}
-                <h2 class="text-center">Nenhum comentário</h2>
-                <p>Seja o primeiro a comentar!</p>
+                    <h2 class="text-center">Nenhum comentário</h2>
+                    <p>Seja o primeiro a comentar!</p>
                 {% endfor %}
             </section>
         </div>
