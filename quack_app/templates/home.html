@@ -86,7 +86,7 @@
         <header class="d-lg-none bg-light p-2 rounded-bottom border-bottom border-2 border-warning-subtle">
             <div id="headernav" class="d-flex justify-content-around align-items-center text-center mb-1">
                 <a href="{% url 'profile' handle=request.user.handle %}" style="width: 100px">
-                    <img class="rounded-circle" src="{{ request.user.profile_pic.url }}" width="35px" alt="Foto de Perfil">
+                    <img class="rounded-circle" src="{{ request.user.profile_pic.url }}" width="35px" height="35px" alt="Foto de Perfil">
                 </a>
                 <h1 class="titulo m-0 text-warning" style="width: 100px">Quack</h1>
                 <i id="btn-search" class="btn bi bi-search" style="width: 100px"></i>
@@ -129,7 +129,7 @@
                 <div class="dropdown">
                     <a href="" class="d-flex justify-content-between align-items-center link-dark text-decoration-none drop-toggle" id="toggleUser" data-bs-toggle="dropdown">
                         <div class="d-flex">
-                            <img class="rounded-circle me-2" src="{{ request.user.profile_pic.url }}" width="55px" alt="Foto de Perfil">
+                            <img class="rounded-circle me-2" src="{{ request.user.profile_pic.url }}" width="55px" height="55px" alt="Foto de Perfil">
                             <div>
                                 <strong class="fs-5 d-block">{{ request.user.name }}</strong>
                                 <label class="fs-6 d-block">@{{ request.user.handle }}</label>
@@ -154,26 +154,26 @@
                         {% for quack in quacks %}
                         <article class="shadow-sm p-3 mb-2 bg-body-tertiary rounded">
                                 <a href="{% url 'profile' handle=quack.user.handle %}" class="d-flex text-decoration-none link-dark mb-3">
-                                    <img class="rounded-circle me-3" src="{{ quack.user.profile_pic.url }}" width="55px" alt="Foto de Perfil">
+                                    <img class="rounded-circle me-3" src="{{ quack.user.profile_pic.url }}" width="55px" height="55px" alt="Foto de Perfil">
                                     <div class="d-flex flex-column">
                                         <strong class="fs-5 d-inline-block text-truncate">{{ quack.user.name }}</strong>
                                         <label class="fs-6 d-inline-block text-truncate">@{{ quack.user.handle }}</label>
                                     </div>
                                 </a>
-                            <a class="text-decoration-none link-dark" href="{% url 'post_detail' post_id=quack.id %}">
-                                <p class="m-0">{{ quack.content }}</p>
-                            </a>
-                            <div class="d-flex justify-content-end counters">
-                                <div class="me-3">
-                                    <i class="bi bi-chat-right-text"></i> {{ quack.total_comments }}
+                                <a class="text-decoration-none link-dark" href="{% url 'post_detail' post_id=quack.id %}">
+                                    <p class="m-0">{{ quack.content }}</p>
+                                </a>
+                                <div class="d-flex justify-content-end counters">
+                                    <div class="me-3">
+                                        <i class="bi bi-chat-right-text"></i> {{ quack.total_comments }}
+                                    </div>
+                                    <div>
+                                        <i class="bi bi-heart"></i> {{ quack.total_likes }}
+                                    </div>
                                 </div>
-                                <div>
-                                    <i class="bi bi-heart"></i> {{ quack.total_likes }}
-                                </div>
-                            </div>
-                        </article>
+                            </article>
                         {% empty %}
-                        <p>Nenhum post disponível.</p>
+                            <p>Nenhum post disponível.</p>
                         {% endfor %}
                     </div>
                 </div>
@@ -186,26 +186,26 @@
                         {% for quack in quacks %}
                         <article class="shadow-sm p-3 mb-2 bg-body-tertiary rounded">
                                 <a href="{% url 'profile' handle=quack.user.handle %}" class="d-flex text-decoration-none link-dark mb-3">
-                                    <img class="rounded-circle me-3" src="{{ quack.user.profile_pic.url }}" width="55px" alt="Foto de Perfil">
+                                    <img class="rounded-circle me-3" src="{{ quack.user.profile_pic.url }}" width="55px" height="55px" alt="Foto de Perfil">
                                     <div>
                                         <strong class="fs-5 d-inline-block text-truncate">{{ quack.user.name }}</strong>
                                         <label class="fs-6 d-inline-block text-truncate">@{{ quack.user.handle }}</label>
                                     </div>
                                 </a>
-                            <a class="text-decoration-none link-dark" href="{% url 'post_detail' post_id=quack.id %}">
-                                <p class="m-0">{{ quack.content }}</p>
-                            </a>
-                            <div class="d-flex justify-content-end counters">
-                                <div class="me-3">
-                                    <i class="bi bi-chat-right-text"></i> {{ quack.total_comments }}
+                                <a class="text-decoration-none link-dark" href="{% url 'post_detail' post_id=quack.id %}">
+                                    <p class="m-0">{{ quack.content }}</p>
+                                </a>
+                                <div class="d-flex justify-content-end counters">
+                                    <div class="me-3">
+                                        <i class="bi bi-chat-right-text"></i> {{ quack.total_comments }}
+                                    </div>
+                                    <div>
+                                        <i class="bi bi-heart"></i> {{ quack.total_likes }}
+                                    </div>
                                 </div>
-                                <div>
-                                    <i class="bi bi-heart"></i> {{ quack.total_likes }}
-                                </div>
-                            </div>
-                        </article>
+                            </article>
                         {% empty %}
-                        <p>Nenhum post disponível.</p>
+                            <p>Nenhum post disponível.</p>
                         {% endfor %}
                     </div>
                 </div>
@@ -225,6 +225,7 @@
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item"><i class="bi bi-dot"></i>Reestilização da Página Home</li>
                             <li class="list-group-item"><i class="bi bi-dot"></i>Reestilização da Página de Usuário</li>
+                            <li class="list-group-item"><i class="bi bi-dot"></i>Reestilização da Página de Post</li>
                         </ul>
                     </div>
                 </div>

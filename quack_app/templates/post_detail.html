@@ -4,169 +4,90 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quack - Post</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <!-- FontAwesome CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         body {
-            background-color: #ffffff;
-            color: #333333;
+            background-image: url("https://i.pinimg.com/originals/dc/b8/34/dcb83428c8d5e1c5410b6befe4365364.png");
+            background-size: cover;
+            background-repeat: no-repeat;
         }
-        .navbar {
-            background-color: #FFEB3B;
-            margin-bottom: 20px;
+        #card-post{
+            width: 800px;
+            min-height: 100vh;
         }
-        .navbar-brand {
-            color: #000000 !important;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
+        article {
+            border-bottom: 2px solid rgb(255, 234, 0);
         }
-        .navbar-brand .fa-duck {
-            font-size: 24px; 
-            margin-right: 10px; 
-        }
-        .navbar-nav .nav-link {
-            color: #000000 !important; 
-        }
-        .navbar-nav .nav-link.active {
-            font-weight: bold;
-        }
-        .container {
-            max-width: 1200px;
-        }
-        .content {
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
-        .footer {
-            background-color: #FFEB3B;
-            color: #000000;
-            text-align: center;
-            padding: 10px;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-        }
-        .quack {
-            border-bottom: 1px solid #e6ecf0;
-            padding-bottom: 10px;
-            margin-bottom: 10px;
-        }
-        .quack:last-child {
-            border-bottom: none;
-        }
-        .quack-user {
-            font-weight: bold;
-            margin-right: 10px;
-        }
-        .quack-content {
-            margin-top: 5px;
-        }
-        .like-button {
-            cursor: pointer;
-            color: #FFEB3B;
-        }
-        .comment-section {
-            margin-top: 20px;
-        }
-        .comment {
-            border-bottom: 1px solid #e6ecf0;
-            padding-bottom: 10px;
-            margin-bottom: 10px;
-        }
-        .comment:last-child {
-            border-bottom: none;
-        }
-        .comment-user {
-            font-weight: bold;
-            margin-right: 10px;
-        }
-        .comment-content {
-            margin-top: 5px;
-        }
-        .comment-form {
-            margin-top: 20px;
+        @media (width < 576px) {
+            #card-post{
+                width: 96%;   
+            }
         }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light">
-        <a class="navbar-brand" href="#">
-            <i class="fas fa-duck"></i> Quack
-        </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Alternar navegação">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'home' %}">Início</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Explorar</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Notificações</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Mensagens</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
-
     <div class="container">
-        <div class="content">
-            <h1>Post</h1>
-            <div class="quack">
-                <span class="quack-user">{{ post.user.name }}</span>
-                <span class="quack-user">@{{ post.user.handle }}</span>
-                <div class="quack-content">{{ post.content }}</div>
-                <div class="quack-footer">
-                    <span class="quack-time">{{ post.created_at|date:"H:i" }}</span>
-                    <span id="like-count-{{ post.id }}">{{ post.total_likes }}</span> likes
-                    <i id="like-button-{{ post.id }}" class="fa fa-heart like-button" onclick="likePost({{ post.id }})"></i>
-                </div>
-            </div>
-
-            <div class="comment-section">
-                <h2>Comentários</h2>
-                {% for comment in comments %}
-                <div class="comment">
-                    <span class="comment-user">{{ comment.user.name }}</span>
-                    <span class="comment-user">@{{ comment.user.handle }}</span>
-                    <div class="comment-content">{{ comment.content }}</div>
-                    <div class="comment-footer">
-                        <span class="comment-time">{{ comment.created_at|date:"H:i" }}</span>
+        <div id="card-post" class="mx-auto bg-light p-4 rounded">
+            <a href="{% url 'home' %}" class="text-dark link-dark my-1 d-flex flex-row-reverse">
+                <i class="bi bi-house fs-4 end"></i>
+            </a>
+            <article class="p-3 mb-2">
+                <a href="{% url 'profile' handle=post.user.handle %}" class="d-flex text-decoration-none link-dark mb-3">
+                    <img class="rounded-circle me-3" src="{{ post.user.profile_pic.url }}" width="55px" alt="Foto de Perfil">
+                    <div class="d-flex flex-column">
+                        <strong class="fs-5 d-inline-block text-truncate">{{ post.user.name }}</strong>
+                        <label class="fs-6 d-inline-block text-truncate">@{{ post.user.handle }}</label>
+                    </div>
+                </a>
+                <p class="my-3">{{ post.content }}</p>
+                <div class="d-flex justify-content-between counters">
+                    <span class="quack-time me-3 text-secondary">{{ post.created_at|date:"d/m/Y H:i" }}</span>
+                    <div onclick="likePost({{ post.id }})">
+                        <i class="bi bi-heart"></i> {{ post.total_likes }}
                     </div>
                 </div>
+            </article>
+
+            <section>
+                <div>
+                    <form method="post" action="{% url 'post_detail' post.id %}" class="d-flex align-items-center mb-4">
+                        <img class="d-none d-md-block rounded-circle me-3" src="{{ request.user.profile_pic.url }}" width="55px" height="55px" alt="Foto de Perfil">
+                        <div class="input-group">
+                            {% csrf_token %}
+                            <input type="text" name="{{ form.content.name }}" class="form-control border border-0 border-bottom" placeholder="Adicionar comentário">
+                            <button class="btn btn-outline-warning bi bi-send p-4" type="submit"></button>
+                        </div>
+                    </form>
+                </div>
+                {% if comments %}
+                    <h2 class="text-center">{{ post.total_comments }} comentário(s)</h2>
+                {% endif %}
+                {% for comment in comments %}
+                    <article class="p-3 mb-2">
+                        <a href="{% url 'profile' handle=user.handle %}" class="d-flex text-decoration-none link-dark mb-3">
+                            <img class="rounded-circle me-3" src="{{ comment.user.profile_pic.url }}" width="55px" alt="Foto de Perfil">
+                            <div class="d-flex flex-column">
+                                <strong class="fs-5 d-inline-block text-truncate">{{ comment.user.name }}</strong>
+                                <label class="fs-6 d-inline-block text-truncate">@{{ comment.user.handle }}</label>
+                            </div>
+                        </a>
+                        <p class="my-3">{{ comment.content }}</p>
+                        <div class="d-flex justify-content-between counters">
+                            <span class="quack-time me-3 text-secondary">{{ comment.created_at|date:"d/m/Y H:i" }}</span>
+                        </div>
+                    </article>
                 {% empty %}
-                <p>Seja o primeiro a comentar!</p>
+                    <h2 class="text-center">Nenhum comentário</h2>
+                    <p>Seja o primeiro a comentar!</p>
                 {% endfor %}
-            </div>
-
-            <div class="comment-form">
-                <h3>Adicionar Comentário</h3>
-                <form method="post" action="{% url 'post_detail' post.id %}">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <button type="submit" class="btn btn-primary">Comentar</button>
-                </form>
-            </div>
+            </section>
         </div>
-    </div>
-
-    <div class="footer">
-        &copy; 2024 Quack. Todos os direitos reservados.
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
 </body>
 </html>

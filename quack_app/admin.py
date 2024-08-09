@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from quack_app.models import User, Post
+from quack_app.models import User, Post, Comment
 
 
 class MyUserAdmin(BaseUserAdmin):
@@ -64,3 +64,4 @@ class MyUserAdmin(BaseUserAdmin):
 
 admin.site.register(User, MyUserAdmin)
 admin.site.register(Post)
+admin.site.register(Comment)
