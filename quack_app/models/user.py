@@ -14,14 +14,22 @@ class User(AbstractUser):
     location = models.CharField(max_length=100, blank=True)
     birth_date = models.DateTimeField(null=True, blank=True)
     following = models.ManyToManyField(
-        "self", symmetrical=False, related_name="user_following"
+        "self", symmetrical=False, related_name="user_following", blank=True
     )
     followers = models.ManyToManyField(
-        "self", symmetrical=False, related_name="user_followers"
+        "self", symmetrical=False, related_name="user_followers", blank=True
     )
 
     USERNAME_FIELD = "handle"
     REQUIRED_FIELDS = ["name", "email"]
+
+    def clean(self):
+        self.handle = self.handle.lower()
+
+    def save(self, *args, **kwargs):
+        if not self.username:
+            self.username = self.handle
+        super().save(*args, **kwargs)
 
     def follow(self, user):
         """Seguir um usuário"""
@@ -40,6 +48,12 @@ class User(AbstractUser):
     def is_followed_by(self, user):
         """Verifica se é seguido pelo usuário"""
         return self.followers.filter(pk=user.pk).exists()
+
+    def total_following(self):
+        return self.user_following.count()
+    
+    def total_followers(self):
+        return self.user_followers.count()
 
     def save(self, *args, **kwargs):
         if not self.username:

@@ -13,7 +13,7 @@ class Post(models.Model):
         return self.likes.count()
 
     def total_comments(self):
-        return self.parent.count()
+        return self.comments.count()
 
     def __str__(self):
         return f"{self.user.handle} postou {self.content}"

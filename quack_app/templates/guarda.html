@@ -1,0 +1,22 @@
+<div class="profile-header">
+    <img src="{{ user.profile_pic.url }}" alt="Profile Picture" width="150" height="150">
+    <h1>{{ user.name }} (@{{ user.handle }})</h1>
+</div>
+<div class="profile-info">
+    <p><strong>Bio:</strong> {{ user.bio }}</p>
+    <p><strong>Seguindo:</strong> {{ user.following.count }}</p>
+    <p><strong>Seguidores:</strong> {{ user.followers.count }}</p>
+    <p><strong>Localização:</strong> {{ user.location }}</p>
+    <p><strong>Aniversário:</strong> {{ user.birth_date }}</p>
+</div>
+<div id="quacks">
+    <h2>Quacks</h2>
+    {% for quack in quacks %}
+    <div class="quack">
+        <span class="quack-user">{{ quack.user.name }}</span>
+        <span class="quack-user">@{{ quack.user.handle }}</span>
+        <div class="quack-content">{{ quack.content }}</div>
+        <span class="quack-time">{{ quack.created_at|date:"d/m/Y H:i" }}</span>
+    </div>
+    {% endfor %}
+</div>

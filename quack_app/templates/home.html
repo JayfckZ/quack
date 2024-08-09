@@ -1,124 +1,285 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quack - Início</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <!-- FontAwesome CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Quack - Home</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&display=swap" rel="stylesheet">
     <style>
-        body {
-            background-color: #ffffff;
-            color: #333333;
+        .titulo{
+            font-family: "Baloo 2", sans-serif;
         }
-        .navbar {
-            background-color: #FFEB3B;
-            margin-bottom: 20px;
+        .bg-quack{
+            background-color: rgb(255, 234, 0) !important;
         }
-        .navbar-brand {
-            color: #000000 !important;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
+        .text-quack{
+            color: rgb(255, 234, 0);
         }
-        .navbar-brand .fa-duck {
-            font-size: 24px; 
-            margin-right: 10px; 
+        .nav-pills .nav-link.active{
+            background-color: rgb(255, 234, 0);
         }
-        .navbar-nav .nav-link {
-            color: #000000 !important; 
+        .container2{
+            margin: 0 16px;
         }
-        .navbar-nav .nav-link.active {
-            font-weight: bold;
+        .fixed-col {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
         }
-        .container {
-            max-width: 1200px;
+        .scroll-col {
+            height: 100vh;
+            overflow-y: auto;
         }
-        .content {
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
+        .counters {
+            font-size: 18px;
         }
-        .footer {
-            background-color: #FFEB3B;
-            color: #000000;
-            text-align: center;
-            padding: 10px;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
+        .nav-link {
+            cursor: pointer;
         }
-        .quack {
-            border-bottom: 1px solid #e6ecf0;
-            padding-bottom: 10px;
-            margin-bottom: 10px;
+        .nav-link:hover {
+            background-color: rgba(255, 234, 0, 0.1);
         }
-        .quack:last-child {
-            border-bottom: none;
+        .bi-caret-up-fill {
+            justify-self: end;
         }
-        .quack-user {
-            font-weight: bold;
-            margin-right: 10px;
+        .headernav img{
+            overflow-x: visible !important;
         }
-        .quack-content {
-            margin-top: 5px;
+        .headernav h1{
+            overflow-x: visible !important;
+        }
+        .headernav i{
+            overflow-x: visible !important;
+        }
+        @media (width < 992px) {
+            * {
+                overflow-x: clip;
+            }
+            .container2{
+                margin: 0;
+            }
+            .nav-pills .nav-link.active{
+                background-color: transparent;
+                color: rgb(255, 193, 7) !important;
+            }
+            .nav-link:hover {
+            background-color: rgba(255, 193, 7, 0.1);
+            }
+            #search {
+                position: fixed;
+                top: 0;
+                right: 0;
+                width: 100%;
+                height: 100%;
+                border-left: 1px solid rgb(255, 193, 7);
+            }
         }
     </style>
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-light">
-        <a class="navbar-brand" href="#">
-            <i class="fas fa-duck"></i> Quack
-        </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Alternar navegação">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item active">
-                    <a class="nav-link" href="#">Início <span class="sr-only">(atual)</span></a>
-                </li>
+<body class="bg-white">
+    <div class="container2">
+        <header class="d-lg-none bg-light p-2 rounded-bottom border-bottom border-2 border-warning-subtle">
+            <div id="headernav" class="d-flex justify-content-around align-items-center text-center mb-1">
+                <a href="{% url 'profile' handle=request.user.handle %}" style="width: 100px">
+                    <img class="rounded-circle" src="{{ request.user.profile_pic.url }}" width="35px" alt="Foto de Perfil">
+                </a>
+                <h1 class="titulo m-0 text-warning" style="width: 100px">Quack</h1>
+                <i id="btn-search" class="btn bi bi-search" style="width: 100px"></i>
+            </div>
+            <ul class="nav nav-pills justify-content-center align-items-center">
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Explorar</a>
+                    <a id="nav-home" class="nav-link text-dark text-center active" style="width: 136px">
+                        <i class="bi bi-house-door me-1"></i>
+                        Início
+                    </a>
                 </li>
+                <div class="vr mx-1"></div>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Notificações</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Mensagens</a>
+                    <a id="nav-network" class="nav-link text-dark text-center" style="width: 136px">
+                        <i class="bi bi-people me-1"></i>
+                        Sua rede
+                    </a>
                 </li>
             </ul>
-        </div>
-    </nav>
-
-    <div class="container">
-        <div class="content">
-            <h1>Início</h1>
-            <p>Bem-vindo ao Quack! Explore as últimas atualizações e interaja com seus Quackers.</p>
-
-            <div id="quacks">
-                {% for quack in quacks %}
-                <div class="quack">
-                    <span class="quack-user">{{ quack.user.name }}</span>
-                    <span class="quack-user">@{{ quack.user.handle }}</span>
-                    <div class="quack-content">{{ quack.content }}</div>
-                    <span class="quack-time">{{ quack.created_at|date:"H:i" }}</span>
+        </header>
+        <div class="row">
+            <aside class="col-lg fixed-col d-lg-flex d-none flex-column flex-shrink-0 p-3 bg-light" style="width: 280px; height: 100vh;">
+                <a href="{% url 'home' %}" class="title mb-3 link-dark text-decoration-none text-dark"><h1 class="titulo">Quack</h1></a>
+                <hr>
+                <ul class="nav nav-pills flex-column mb-auto">
+                    <li class="nav-item">
+                        <a id="nav-home-desktop" class="nav-link text-dark active">
+                            <i class="bi bi-house-door me-3"></i>
+                            Início
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a id="nav-network-desktop" class="nav-link text-dark">
+                            <i class="bi bi-people me-3"></i>
+                            Sua rede
+                        </a>
+                    </li>
+                </ul>
+                <hr>
+                <div class="dropdown">
+                    <a href="" class="d-flex justify-content-between align-items-center link-dark text-decoration-none drop-toggle" id="toggleUser" data-bs-toggle="dropdown">
+                        <div class="d-flex">
+                            <img class="rounded-circle me-2" src="{{ request.user.profile_pic.url }}" width="55px" alt="Foto de Perfil">
+                            <div>
+                                <strong class="fs-5 d-block">{{ request.user.name }}</strong>
+                                <label class="fs-6 d-block">@{{ request.user.handle }}</label>
+                            </div>
+                        </div>
+                        <i class="bi bi-caret-up-fill"></i>
+                    </a>
+                    <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2" data-popper-placement="top" style="position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate(0px, -34px);">
+                        <li><a class="dropdown-item bg-quack" href="#"><i class="bi bi-pencil me-1"></i></i>Novo Quack</a></li>
+                        <li><a class="dropdown-item" href="{% url 'profile' handle=request.user.handle %}"><i class="bi bi-person-circle me-1"></i>Perfil</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-1"></i>Configurações</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-box-arrow-in-left me-1"></i>Sair</a></li>
+                    </ul>
                 </div>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
+            </aside>
+            
+            <section id="home" class="col-lg-6 scroll-col">
+                <div class="container px-5 py-3">
+                    <div class="row">
+                        <h2 class="titulo">Início</h2>
+                        {% for quack in quacks %}
+                        <article class="shadow-sm p-3 mb-2 bg-body-tertiary rounded">
+                                <a href="{% url 'profile' handle=quack.user.handle %}" class="d-flex text-decoration-none link-dark mb-3">
+                                    <img class="rounded-circle me-3" src="{{ quack.user.profile_pic.url }}" width="55px" alt="Foto de Perfil">
+                                    <div class="d-flex flex-column">
+                                        <strong class="fs-5 d-inline-block text-truncate">{{ quack.user.name }}</strong>
+                                        <label class="fs-6 d-inline-block text-truncate">@{{ quack.user.handle }}</label>
+                                    </div>
+                                </a>
+                            <a class="text-decoration-none link-dark" href="{% url 'post_detail' post_id=quack.id %}">
+                                <p class="m-0">{{ quack.content }}</p>
+                            </a>
+                            <div class="d-flex justify-content-end counters">
+                                <div class="me-3">
+                                    <i class="bi bi-chat-right-text"></i> {{ quack.total_comments }}
+                                </div>
+                                <div>
+                                    <i class="bi bi-heart"></i> {{ quack.total_likes }}
+                                </div>
+                            </div>
+                        </article>
+                        {% empty %}
+                        <p>Nenhum post disponível.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
 
-    <div class="footer">
-        &copy; 2024 Quack. Todos os direitos reservados.
+            <section id="network" class="col-lg-6 scroll-col d-none">
+                <div class="container px-5 py-3">
+                    <div class="row">
+                        <h2 class="titulo">Sua rede</h2>
+                        {% for quack in quacks %}
+                        <article class="shadow-sm p-3 mb-2 bg-body-tertiary rounded">
+                                <a href="{% url 'profile' handle=quack.user.handle %}" class="d-flex text-decoration-none link-dark mb-3">
+                                    <img class="rounded-circle me-3" src="{{ quack.user.profile_pic.url }}" width="55px" alt="Foto de Perfil">
+                                    <div>
+                                        <strong class="fs-5 d-inline-block text-truncate">{{ quack.user.name }}</strong>
+                                        <label class="fs-6 d-inline-block text-truncate">@{{ quack.user.handle }}</label>
+                                    </div>
+                                </a>
+                            <a class="text-decoration-none link-dark" href="{% url 'post_detail' post_id=quack.id %}">
+                                <p class="m-0">{{ quack.content }}</p>
+                            </a>
+                            <div class="d-flex justify-content-end counters">
+                                <div class="me-3">
+                                    <i class="bi bi-chat-right-text"></i> {{ quack.total_comments }}
+                                </div>
+                                <div>
+                                    <i class="bi bi-heart"></i> {{ quack.total_likes }}
+                                </div>
+                            </div>
+                        </article>
+                        {% empty %}
+                        <p>Nenhum post disponível.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+        
+            <aside id="search" class="col-lg fixed-col d-lg-flex d-none flex-column flex-shrink-0 p-3 bg-light" style="width: 280px; height: 100vh;">
+                <i id="back" class="btn bi bi-arrow-left mb-4 d-lg-none"></i>
+                <hr class="mt-5">
+                <div class="input-group flex-nowrap">
+                    <i class="input-group-text bi bi-search"></i>
+                    <input type="text" class="form-control" placeholder="Buscar usuário">
+                </div>
+                <div class="mb-5"></div>
+                <div class="card mt-5">
+                    <div class="card-header">O que há de novo?</div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><i class="bi bi-dot"></i>Reestilização da Página Home</li>
+                            <li class="list-group-item"><i class="bi bi-dot"></i>Reestilização da Página de Usuário</li>
+                        </ul>
+                    </div>
+                </div>
+            </aside>
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+    <script>
+        const btnHome = document.getElementById("nav-home")
+        const btnNet = document.getElementById("nav-network")
+        const btnHomeDesk = document.getElementById("nav-home-desktop")
+        const btnNetDesk = document.getElementById("nav-network-desktop")
+        const home = document.getElementById("home")
+        const network = document.getElementById("network")
+        const btnSearch = document.getElementById("btn-search")
+        const btnBack = document.getElementById("back")
+        const search = document.getElementById("search")
+
+        btnHome.addEventListener("click", () => {
+            btnNet.classList.remove('active')
+            network.classList.add('d-none')
+            btnHome.classList.add('active')
+            home.classList.remove('d-none')
+        })
+
+        btnNet.addEventListener("click", () => {
+            btnHome.classList.remove('active')
+            home.classList.add('d-none')
+            btnNet.classList.add('active')
+            network.classList.remove('d-none')
+        })
+
+        btnHomeDesk.addEventListener("click", () => {
+            btnNetDesk.classList.remove('active')
+            network.classList.add('d-none')
+            btnHomeDesk.classList.add('active')
+            home.classList.remove('d-none')
+        })
+
+        btnNetDesk.addEventListener("click", () => {
+            btnHomeDesk.classList.remove('active')
+            home.classList.add('d-none')
+            btnNetDesk.classList.add('active')
+            network.classList.remove('d-none')
+        })
+
+        btnSearch.addEventListener("click", () => {
+            search.classList.remove('d-none')
+        })
+        btnBack.addEventListener("click", () => {
+            search.classList.add('d-none')
+        })
+    </script>
 </body>
 </html>
