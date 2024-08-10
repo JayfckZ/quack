@@ -1,6 +1,7 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from .models import User, Post, PostForm, Comment, CommentForm
 
 
@@ -73,6 +74,26 @@ def like_post(request, post_id):
             liked = True
         return JsonResponse({"liked": liked, "total_likes": post.total_likes()})
     return JsonResponse({"error": "Not authenticated"}, status=401)
+
+
+def search_users(request):
+    query = request.GET.get('q', '')
+    if query:
+        users = User.objects.filter(
+            Q(handle__icontains=query) | Q(name__icontains=query)
+        )[:10]
+        results = []
+        for user in users:
+            results.append({
+                'name': user.name,
+                'handle': user.handle,
+                'profile_pic_url': user.profile_pic.url,
+                'is_staff': user.is_staff
+            })
+
+    else:
+        results = []
+    return JsonResponse(results, safe=False)
 
 
 @login_required

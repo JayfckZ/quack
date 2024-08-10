@@ -242,15 +242,18 @@
                 <div class="d-flex justify-content-between mb-4">
                     <i id="back" class="btn bi bi-arrow-left d-lg-none"></i>
                     <div class="d-flex align-items-center"> 
-                        <a class="me-2 p-1 bg-quack link-dark rounded d-flex text-decoration-none fw-bold" href="" data-bs-toggle="modal" data-bs-target="#modalPost"><i class="bi bi-pencil me-1"></i></i>Postar</a>
-                        <a class="dropdown-item" href=""><i class="bi bi-gear me-1"></i></a></li>
+                        <a class="me-2 p-1 bg-quack d-lg-none link-dark rounded d-flex text-decoration-none fw-bold" href="" data-bs-toggle="modal" data-bs-target="#modalPost"><i class="bi bi-pencil me-1"></i></i>Postar</a>
+                        <a class="d-lg-none" href=""><i class="bi bi-gear me-1"></i></a></li>
                     </div>
                 </div>
                 <hr class="mt-5">
+
                 <div class="input-group flex-nowrap">
                     <i class="input-group-text bi bi-search"></i>
-                    <input type="text" class="form-control" placeholder="Buscar usuário">
+                    <input type="text" class="form-control" placeholder="Buscar usuário" id="user-search-input">
                 </div>
+                <div id="search-results" class="border"></div>
+
                 <div class="mb-5"></div>
                 <div class="card mt-5">
                     <div class="card-header">O que há de novo?</div>
@@ -349,6 +352,42 @@
                 .catch(error => console.error('Erro ao processar a solicitação:', error))
             })
         })
+
+        document.getElementById('user-search-input').addEventListener('input', function() {
+        const query = this.value
+        if (query.length > 0) {
+            fetch(`/search-users/?q=${query}`)
+                .then(response => response.json())
+                .then(data => {
+                    let resultsDiv = document.getElementById('search-results')
+                    resultsDiv.innerHTML = ''
+                    if (data.length > 0) {
+                        data.forEach(searchUser => {
+                            console.log(searchUser)
+                            let userDiv = document.createElement('div');
+                            let userHTML = `
+                                <a class="dropdown-item d-flex align-items-center p-1" href="/profile/${searchUser.handle}">
+                                    <img class="rounded-circle me-1" src="${searchUser.profile_pic_url}" alt="Foto de Perfil" width="35" height="35">
+                                    <div class="align-items-end">
+                                        <strong class="d-block text-truncate">${searchUser.name}`
+                            if (searchUser.is_staff) {
+                                userHTML += ` <i class="bi bi-patch-check-fill text-warning"></i>`
+                            }
+                            userHTML += `</strong>
+                                        <p class="fw-light d-block m-0 text-truncate">@${searchUser.handle}</p>
+                                    </div>
+                                </a>`
+                            userDiv.innerHTML = userHTML;
+                            resultsDiv.appendChild(userDiv);
+                        })
+                    } else {
+                        resultsDiv.innerHTML = '<p>Nenhum usuário encontrado.</p>'
+                    }
+                })
+        } else {
+            document.getElementById('search-results').innerHTML = ''
+        }
+    })
 
         function getCookie(name) {
             let cookieValue = null;
