@@ -44,7 +44,7 @@ class User(AbstractUser):
 
     def is_followed_by(self, user):
         """Verifica se é seguido pelo usuário"""
-        return self.user_followers.filter(pk=user.pk).exists()
+        return user.user_followers.filter(pk=self.pk).exists()
 
     def total_following(self):
         return self.user_following.count()

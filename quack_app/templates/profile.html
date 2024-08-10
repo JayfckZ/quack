@@ -82,33 +82,68 @@
                 <div class="col-lg-6">
                     <i class="bi bi-calendar-week me-1"></i> <span>Se juntou ao Quack em {{ user.date_joined|date:"m/Y" }}</span>
                 </div>
-                {% if is_followed %}
-                <div>
-                    <i class="bi bi-person-plus"></i> <span>Este usuário segue você</span>
-                </div>
-                {% endif %}
             </div>
             {% if request.user != user %}
-            {% if is_following %}
-                <form action="{% url 'unfollow_user' user.handle %}" method="post">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-outline-warning text-dark fw-bold m-0 mt-2">Deixar de Seguir</button>
-                </form>
-            {% else %}
-                <form action="{% url 'follow_user' user.handle %}" method="post">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-warning fw-bold m-0 mt-2">Seguir</button>
-                </form>
+                {% if is_following %}
+                    <form action="{% url 'unfollow_user' user.handle %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-warning text-dark fw-bold m-0 mt-2">Deixar de Seguir</button>
+                    </form>
+                {% else %}
+                    <form action="{% url 'follow_user' user.handle %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-warning fw-bold m-0 mt-2">Seguir</button>
+                    </form>
+                {% endif %}
             {% endif %}
+            {% if is_followed %}
+                <div class="text-body-secondary">
+                    <i class="bi bi-person-plus"></i> <span>Este usuário segue você</span>
+                </div>
             {% endif %}
             <div class="row pt-2">
-                <p class="col-5 col-md-3 col-lg-2 m-0">
-                    <strong>{{ user.total_following }}</strong> Seguindo
-                </p>
-                <p class="col-5 col-md-3 col-lg-2 m-0">
-                    <strong>{{ user.total_followers }}</strong> Seguidores
-                </p>
+                <div class="dropdown col-5 col-md-3 col-lg-2 m-0">
+                    <a href="" class="col-5 col-md-3 col-lg-2 m-0  text-decoration-none text-dark" data-bs-toggle="dropdown">
+                        <strong>{{ user.total_following }}</strong> Seguindo
+                    </a>
+                    <ul class="dropdown-menu text-small shadow" data-popper-placement="bottom" style="position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate(0px, -34px);">
+                        {% for following in user.user_following.all %}
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="{% url 'profile' handle=following.handle %}">
+                                    <img class="rounded-circle me-3" src="{{ following.profile_pic.url }}" alt="Foto de Perfil" width="35" height="35">
+                                    <div class="align-items-end">
+                                        <strong class="d-block text-nowrap">{{ following.name }} {% if following.is_staff %}<i class="bi bi-patch-check-fill text-warning"></i>{% endif %}</strong>
+                                        <p class="fw-light d-block m-0">@{{ following.handle }}</p>
+                                    </div>
+                                </a>
+                            </li>
+                        {% empty %}
+                            <p>Este usuário não segue ninguém</p>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="dropdown col-5 col-md-3 col-lg-2 m-0">
+                    <a href="" class="col-5 col-md-3 col-lg-2 m-0 drop-toggle text-decoration-none text-dark" data-bs-toggle="dropdown">
+                        <strong>{{ user.total_followers }}</strong> Seguidores
+                    </a>
+                    <ul class="dropdown-menu text-small shadow" data-popper-placement="bottom" style="position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate(0px, -34px);">
+                        {% for follower in user.user_followers.all %}
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="{% url 'profile' handle=follower.handle %}">
+                                    <img class="rounded-circle me-3" src="{{ follower.profile_pic.url }}" alt="Foto de Perfil" width="35" height="35">
+                                    <div class="align-items-end">
+                                        <strong class="d-block text-nowrap">{{ follower.name }} {% if follower.is_staff %}<i class="bi bi-patch-check-fill text-warning"></i>{% endif %}</strong>
+                                        <p class="fw-light d-block m-0">@{{ follower.handle }}</p>
+                                    </div>
+                                </a>
+                            </li>
+                        {% empty %}
+                            <p>Este usuário não é seguido por ninguém</p>
+                        {% endfor %}
+                    </ul>
+                </div>
             </div>
+            
 
             <ul class="row ror-cols-3 nav nav-underline text-center text-dark text-warning mt-4 p-0">
                 <li class="col nav-item">
