@@ -45,7 +45,7 @@
                         <label class="fs-6 d-inline-block text-truncate">@{{ post.user.handle }}</label>
                     </div>
                 </a>
-                <p class="my-3">{{ post.content }}</p>
+                <p class="my-3">{{ post.content|linebreaksbr }}</p>
                 <div class="d-flex justify-content-between counters">
                     <span class="quack-time me-3 text-secondary">{{ post.created_at|date:"d/m/Y H:i" }}</span>
                     <button class="like-button {% if user in post.likes.all %}liked{% endif %}" data-post-id="{{ post.id }}">
@@ -77,7 +77,7 @@
                                 <label class="fs-6 d-inline-block text-truncate">@{{ comment.user.handle }}</label>
                             </div>
                         </a>
-                        <p class="my-3">{{ comment.content }}</p>
+                        <p class="my-3">{{ comment.content|linebreaksbr }}</p>
                         <div class="d-flex justify-content-between counters">
                             <span class="quack-time me-3 text-secondary">{{ comment.created_at|date:"d/m/Y H:i" }}</span>
                         </div>

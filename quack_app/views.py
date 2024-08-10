@@ -1,15 +1,27 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
-from .models import User, Post, CommentForm, Comment
+from .models import User, Post, PostForm, Comment, CommentForm
 
 
 # Create your views here.
 def home(request):
     quacks = Post.objects.all().order_by("-created_at")
     followed_users = request.user.user_following.all()
-    network_quacks = Post.objects.filter(user__in=followed_users).order_by("-created_at")
-    return render(request, "home.html", {"quacks": quacks, "network_quacks": network_quacks})
+    network_quacks = Post.objects.filter(user__in=followed_users).order_by(
+        "-created_at"
+    )
+    form = PostForm(request.POST or None)
+
+    if form.is_valid():
+        post = form.save(commit=False)
+        post.user = request.user
+        post.save()
+        return redirect("home")
+
+    return render(
+        request, "home.html", {"quacks": quacks, "network_quacks": network_quacks, "form": form}
+    )
 
 
 def profile(request, handle):
@@ -18,7 +30,17 @@ def profile(request, handle):
     comments = Comment.objects.filter(user=user).order_by("-created_at")
     is_following = request.user.is_authenticated and request.user.is_following(user)
     is_followed = request.user.is_authenticated and request.user.is_followed_by(user)
-    return render(request, "profile.html", {"user": user, "quacks": quacks, "comments": comments, "is_following": is_following, "is_followed": is_followed})
+    return render(
+        request,
+        "profile.html",
+        {
+            "user": user,
+            "quacks": quacks,
+            "comments": comments,
+            "is_following": is_following,
+            "is_followed": is_followed,
+        },
+    )
 
 
 def post_detail(request, post_id):
@@ -48,18 +70,19 @@ def like_post(request, post_id):
             post.likes.add(request.user)
             liked = True
         return JsonResponse({"liked": liked, "total_likes": post.total_likes()})
-    return JsonResponse({'error': 'Not authenticated'}, status=401)
+    return JsonResponse({"error": "Not authenticated"}, status=401)
 
 
 @login_required
 def follow_user(request, handle):
     user_to_follow = get_object_or_404(User, handle=handle)
     request.user.follow(user_to_follow)
-    return redirect('profile', handle=handle)
+    return redirect("profile", handle=handle)
+
 
 @login_required
 def unfollow_user(request, handle):
     user_to_unfollow = get_object_or_404(User, handle=handle)
     print(user_to_unfollow)
     request.user.unfollow(user_to_unfollow)
-    return redirect('profile', handle=handle)
+    return redirect("profile", handle=handle)

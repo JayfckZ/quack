@@ -169,7 +169,7 @@
                                     </div>
                                 </a>
                                 <a class="text-decoration-none link-dark" href="{% url 'post_detail' post_id=quack.id %}">
-                                    <p class="m-0">{{ quack.content }}</p>
+                                    <p class="m-0">{{ quack.content|linebreaksbr }}</p>
                                 </a>
                                 <div class="d-flex justify-content-end counters">
                                     <div class="me-3">
@@ -198,7 +198,7 @@
                                     <span class="text-secondary">
                                         Comentando no post de @{{ comment.post.user.handle }}
                                     </span>
-                                    <p class="m-0">{{ comment.content }}</p>
+                                    <p class="m-0">{{ comment.content|linebreaksbr }}</p>
                                 </a>
                                 <div class="d-flex justify-content-end counters">
                                     <span class="quack-time me-3 text-secondary">{{ comment.created_at|date:"d/m/Y H:i" }}</span>

@@ -61,6 +61,9 @@
             border: none;
             cursor: pointer;
         }
+        textarea {
+        resize: none;
+        }
         @media (width < 992px) {
             * {
                 overflow-x: clip;
@@ -94,7 +97,7 @@
                     <img class="rounded-circle" src="{{ request.user.profile_pic.url }}" width="35px" height="35px" alt="Foto de Perfil">
                 </a>
                 <h1 class="titulo m-0 text-warning" style="width: 100px">Quack</h1>
-                <i id="btn-search" class="btn bi bi-search" style="width: 100px"></i>
+                <i id="btn-search" class="btn bi bi-list" style="width: 100px"></i>
             </div>
             <ul class="nav nav-pills justify-content-center align-items-center">
                 <li class="nav-item">
@@ -143,14 +146,33 @@
                         <i class="bi bi-caret-up-fill"></i>
                     </a>
                     <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2" data-popper-placement="top" style="position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate(0px, -34px);">
-                        <li><a class="dropdown-item bg-quack" href="#"><i class="bi bi-pencil me-1"></i></i>Novo Quack</a></li>
+                        <li><a class="dropdown-item bg-quack" href="" data-bs-toggle="modal" data-bs-target="#modalPost"><i class="bi bi-pencil me-1"></i></i>Novo Quack</a></li>
                         <li><a class="dropdown-item" href="{% url 'profile' handle=request.user.handle %}"><i class="bi bi-person-circle me-1"></i>Perfil</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-1"></i>Configurações</a></li>
+                        <li><a class="dropdown-item" href=""><i class="bi bi-gear me-1"></i>Configurações</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-box-arrow-in-left me-1"></i>Sair</a></li>
+                        <li><a class="dropdown-item text-danger" href=""><i class="bi bi-box-arrow-in-left me-1"></i>Sair</a></li>
                     </ul>
                 </div>
             </aside>
+
+            <form method="post" action="{% url 'home' %}" class="modal fade" id="modalPost" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5">Novo quack</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            {% csrf_token %}
+                            <textarea class="form-control" name="{{ form.content.name }}" placeholder="Digite seu post..." style="height: 100px"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-warning">Publicar</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
             
             <section id="home" class="col-lg-6 scroll-col">
                 <div class="container px-5 py-3">
@@ -166,7 +188,7 @@
                                     </div>
                                 </a>
                                 <a class="text-decoration-none link-dark" href="{% url 'post_detail' post_id=quack.id %}">
-                                    <p class="m-0">{{ quack.content }}</p>
+                                    <p class="m-0">{{ quack.content|linebreaksbr }}</p>
                                 </a>
                                 <div class="d-flex justify-content-end counters">
                                     <div class="me-3">
@@ -198,7 +220,7 @@
                                     </div>
                                 </a>
                                 <a class="text-decoration-none link-dark" href="{% url 'post_detail' post_id=quack.id %}">
-                                    <p class="m-0">{{ quack.content }}</p>
+                                    <p class="m-0">{{ quack.content|linebreaksbr }}</p>
                                 </a>
                                 <div class="d-flex justify-content-end counters">
                                     <div class="me-3">
@@ -217,7 +239,13 @@
             </section>
         
             <aside id="search" class="col-lg fixed-col d-lg-flex d-none flex-column flex-shrink-0 p-3 bg-light" style="width: 280px; height: 100vh;">
-                <i id="back" class="btn bi bi-arrow-left mb-4 d-lg-none"></i>
+                <div class="d-flex justify-content-between mb-4">
+                    <i id="back" class="btn bi bi-arrow-left d-lg-none"></i>
+                    <div class="d-flex align-items-center"> 
+                        <a class="me-2 p-1 bg-quack link-dark rounded d-flex text-decoration-none fw-bold" href="" data-bs-toggle="modal" data-bs-target="#modalPost"><i class="bi bi-pencil me-1"></i></i>Postar</a>
+                        <a class="dropdown-item" href=""><i class="bi bi-gear me-1"></i></a></li>
+                    </div>
+                </div>
                 <hr class="mt-5">
                 <div class="input-group flex-nowrap">
                     <i class="input-group-text bi bi-search"></i>
@@ -234,6 +262,8 @@
                             <li class="list-group-item"><i class="bi bi-dot"></i>Curtidas em Posts</li>
                             <li class="list-group-item"><i class="bi bi-dot"></i>Seguir usuários</li>
                             <li class="list-group-item"><i class="bi bi-dot"></i>Selo de verificação <i class="bi bi-patch-check-fill text-warning"></i></li>
+                            <li class="list-group-item"><i class="bi bi-dot"></i>Menu de seguindo e seguidores</li>
+                            <li class="list-group-item"><i class="bi bi-dot"></i>Criar post</li>
                         </ul>
                     </div>
                 </div>
