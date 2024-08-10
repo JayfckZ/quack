@@ -9,9 +9,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         body {
-            background-image: url("https://i.pinimg.com/originals/dc/b8/34/dcb83428c8d5e1c5410b6befe4365364.png");
-            background-size: cover;
-            background-repeat: no-repeat;
+            background-image: url("../../media/background/back4.png");
+            background-repeat: repeat;
         }
         .container {
             overflow-x: hidden;
@@ -26,7 +25,8 @@
             color: black !important;
         }
         #card-profile{
-            width: 800px;
+            max-width: 1000px;
+            width: 100%;
             min-height: 100vh;
         }
         .like-button {
@@ -34,13 +34,9 @@
             border: none;
             cursor: pointer;
         }
-
-        .like-button.liked i {
-            color: rgb(255, 234, 0);
-        }
         @media (width < 576px) {
             #card-profile{
-                width: 300px;   
+                width: 94%;   
             }
             #profilepic {
                 width: 100px !important;
@@ -64,30 +60,52 @@
             <header class="d-flex align-items-end">
                 <img id="profilepic" class="rounded-circle me-3" src="{{ user.profile_pic.url }}" alt="Foto de Perfil" width="150" height="150">
                 <div>
-                    <strong id="username" class="d-block h2 text-nowrap">{{ user.name }}</strong>
+                    <strong id="username" class="d-block h2 text-nowrap">{{ user.name }} {% if user.is_staff %}<i class="bi bi-patch-check-fill text-warning"></i>{% endif %}</strong>
                     <p id="userhandle" class="fw-light d-block h3">@{{ user.handle }}</p>
                 </div>
             </header>
-            <p class="row m-0 mt-4 text-break">
+            <p class="row m-0 my-4 text-break">
                 {{ user.bio|linebreaksbr  }}
             </p>
 
             <div class="row text-body-secondary">
-                <div class="col-lg-3">
-                    <i class="bi bi-geo-alt me-1"></i> <span>{{ user.location }}</span>
-                </div>
-                <div class="col-lg-3">
-                    <i class="bi bi-cake2 me-1"></i> <span>{{ user.birth_date|date:"d/m/Y" }}</span>
-                </div>
+                {% if user.location %}
+                    <div class="col-lg-3">
+                        <i class="bi bi-geo-alt me-1"></i> <span>{{ user.location }}</span>
+                    </div>
+                {% endif %}
+                {% if user.birth_date %}
+                    <div class="col-lg-3">
+                        <i class="bi bi-cake2 me-1"></i> <span>{{ user.birth_date|date:"d/m/Y" }}</span>
+                    </div>
+                {% endif %}
                 <div class="col-lg-6">
                     <i class="bi bi-calendar-week me-1"></i> <span>Se juntou ao Quack em {{ user.date_joined|date:"m/Y" }}</span>
-                </li>
+                </div>
+                {% if is_followed %}
+                <div>
+                    <i class="bi bi-person-plus"></i> <span>Este usuário segue você</span>
+                </div>
+                {% endif %}
             </div>
-            <div class="row pt-4">
-                <p class="col-4 col-md-2 m-0">
+            {% if request.user != user %}
+            {% if is_following %}
+                <form action="{% url 'unfollow_user' user.handle %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-warning text-dark fw-bold m-0 mt-2">Deixar de Seguir</button>
+                </form>
+            {% else %}
+                <form action="{% url 'follow_user' user.handle %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-warning fw-bold m-0 mt-2">Seguir</button>
+                </form>
+            {% endif %}
+            {% endif %}
+            <div class="row pt-2">
+                <p class="col-5 col-md-3 col-lg-2 m-0">
                     <strong>{{ user.total_following }}</strong> Seguindo
                 </p>
-                <p class="col-4 col-md-2 m-0">
+                <p class="col-5 col-md-3 col-lg-2 m-0">
                     <strong>{{ user.total_followers }}</strong> Seguidores
                 </p>
             </div>
@@ -111,7 +129,7 @@
                                 <a href="{% url 'post_detail' post_id=quack.id %}" class="d-flex text-decoration-none link-dark mb-3">
                                     <img class="rounded-circle me-3" src="{{ quack.user.profile_pic.url }}" width="55px" alt="Foto de Perfil">
                                     <div class="d-flex flex-column">
-                                        <strong class="fs-5 d-inline-block text-truncate">{{ quack.user.name }}</strong>
+                                        <strong class="fs-5 d-inline-block text-truncate">{{ quack.user.name }} {% if user.is_staff %}<i class="bi bi-patch-check-fill text-warning"></i>{% endif %}</strong>
                                         <label class="fs-6 d-inline-block text-truncate">@{{ quack.user.handle }}</label>
                                     </div>
                                 </a>
@@ -123,7 +141,7 @@
                                         <i class="bi bi-chat-right-text"></i> {{ quack.total_comments }}
                                     </div>
                                     <button class="like-button {% if request.user in quack.likes.all %}liked{% endif %}" data-post-id="{{ quack.id }}">
-                                        <i class="bi { 'bi-heart-fill' if request.user in quack.likes.all else 'bi-heart' }"></i> {{ quack.total_likes }}
+                                        <i class="bi { 'bi-heart-fill text-warning' if request.user in quack.likes.all else 'bi-heart' }"></i> {{ quack.total_likes }}
                                     </button>
                                 </div>
                             </article>
@@ -137,7 +155,7 @@
                                 <a href="{% url 'post_detail' post_id=comment.post.id %}" class="d-flex text-decoration-none link-dark mb-3">
                                     <img class="rounded-circle me-3" src="{{ comment.user.profile_pic.url }}" width="55px" alt="Foto de Perfil">
                                     <div class="d-flex flex-column">
-                                        <strong class="fs-5 d-inline-block text-truncate">{{ comment.user.name }}</strong>
+                                        <strong class="fs-5 d-inline-block text-truncate">{{ comment.user.name }} {% if user.is_staff %}<i class="bi bi-patch-check-fill text-warning"></i>{% endif %}</strong>
                                         <label class="fs-6 d-inline-block text-truncate">@{{ comment.user.handle }}</label>
                                     </div>
                                 </a>
@@ -171,7 +189,7 @@
         document.querySelectorAll('.like-button').forEach(button => {
             const liked = button.classList.contains('liked')
             const icon = button.querySelector('i');
-            icon.className = liked ? 'bi bi-heart-fill' : 'bi bi-heart';
+            icon.className = liked ? 'bi bi-heart-fill text-warning' : 'bi bi-heart';
             
             button.addEventListener('click', function() {
                 const postId = this.dataset.postId;
@@ -187,7 +205,7 @@
                         alert('Você precisa estar logado para curtir posts.')
                     } else {
                         this.classList.toggle('liked', data.liked)
-                        const iconClass = data.liked ? 'bi bi-heart-fill' : 'bi bi-heart'
+                        const iconClass = data.liked ? 'bi bi-heart-fill text-warning' : 'bi bi-heart'
                         this.querySelector('i').className = iconClass;
                         this.querySelector('i').nextSibling.textContent = ` ${data.total_likes}`
                     }

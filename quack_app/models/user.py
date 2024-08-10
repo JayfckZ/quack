@@ -26,32 +26,29 @@ class User(AbstractUser):
     def clean(self):
         self.handle = self.handle.lower()
 
-    def save(self, *args, **kwargs):
-        if not self.username:
-            self.username = self.handle
-        super().save(*args, **kwargs)
-
     def follow(self, user):
         """Seguir um usuário"""
         if user != self:
-            self.following.add(user)
+            self.user_following.add(user)
+            user.user_followers.add(self)
 
     def unfollow(self, user):
         """Deixar de seguir um usuário"""
         if user != self:
-            self.following.remove(user)
+            self.user_following.remove(user)
+            user.user_followers.remove(self)
 
     def is_following(self, user):
         """Verifica se está seguindo um usuário"""
-        return self.following.filter(pk=user.pk).exists()
+        return self.user_following.filter(pk=user.pk).exists()
 
     def is_followed_by(self, user):
         """Verifica se é seguido pelo usuário"""
-        return self.followers.filter(pk=user.pk).exists()
+        return self.user_followers.filter(pk=user.pk).exists()
 
     def total_following(self):
         return self.user_following.count()
-    
+
     def total_followers(self):
         return self.user_followers.count()
 

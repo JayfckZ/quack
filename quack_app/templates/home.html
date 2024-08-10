@@ -61,10 +61,6 @@
             border: none;
             cursor: pointer;
         }
-
-        .like-button.liked i {
-            color: rgb(255, 234, 0);
-        }
         @media (width < 992px) {
             * {
                 overflow-x: clip;
@@ -140,7 +136,7 @@
                         <div class="d-flex">
                             <img class="rounded-circle me-2" src="{{ request.user.profile_pic.url }}" width="55px" height="55px" alt="Foto de Perfil">
                             <div>
-                                <strong class="fs-5 d-block">{{ request.user.name }}</strong>
+                                <strong class="fs-5 d-block">{{ request.user.name }} {% if request.user.is_staff %}<i class="bi bi-patch-check-fill text-warning"></i>{% endif %}</strong>
                                 <label class="fs-6 d-block">@{{ request.user.handle }}</label>
                             </div>
                         </div>
@@ -165,7 +161,7 @@
                                 <a href="{% url 'profile' handle=quack.user.handle %}" class="d-flex text-decoration-none link-dark mb-3">
                                     <img class="rounded-circle me-3" src="{{ quack.user.profile_pic.url }}" width="55px" height="55px" alt="Foto de Perfil">
                                     <div class="d-flex flex-column">
-                                        <strong class="fs-5 d-inline-block text-truncate">{{ quack.user.name }}</strong>
+                                        <strong class="fs-5 d-inline-block text-truncate">{{ quack.user.name }} {% if quack.user.is_staff %}<i class="bi bi-patch-check-fill text-warning"></i>{% endif %}</strong>
                                         <label class="fs-6 d-inline-block text-truncate">@{{ quack.user.handle }}</label>
                                     </div>
                                 </a>
@@ -177,7 +173,7 @@
                                         <i class="bi bi-chat-right-text"></i> {{ quack.total_comments }}
                                     </div>
                                     <button class="like-button {% if user in quack.likes.all %}liked{% endif %}" data-post-id="{{ quack.id }}">
-                                        <i class="bi { 'bi-heart-fill' if user in quack.likes.all else 'bi-heart' }"></i> {{ quack.total_likes }}
+                                        <i class="bi { 'bi-heart-fill text-warning' if user in quack.likes.all else 'bi-heart' }"></i> {{ quack.total_likes }}
                                     </button>
                                 </div>
                             </article>
@@ -192,12 +188,12 @@
                 <div class="container px-5 py-3">
                     <div class="row">
                         <h2 class="titulo">Sua rede</h2>
-                        {% for quack in quacks %}
+                        {% for quack in network_quacks %}
                         <article class="shadow-sm p-3 mb-2 bg-body-tertiary rounded">
                                 <a href="{% url 'profile' handle=quack.user.handle %}" class="d-flex text-decoration-none link-dark mb-3">
                                     <img class="rounded-circle me-3" src="{{ quack.user.profile_pic.url }}" width="55px" height="55px" alt="Foto de Perfil">
                                     <div>
-                                        <strong class="fs-5 d-inline-block text-truncate">{{ quack.user.name }}</strong>
+                                        <strong class="fs-5 d-inline-block text-truncate">{{ quack.user.name }} {% if quack.user.is_staff %}<i class="bi bi-patch-check-fill text-warning"></i>{% endif %}</strong>
                                         <label class="fs-6 d-inline-block text-truncate">@{{ quack.user.handle }}</label>
                                     </div>
                                 </a>
@@ -209,7 +205,7 @@
                                         <i class="bi bi-chat-right-text"></i> {{ quack.total_comments }}
                                     </div>
                                     <button class="like-button {% if user in quack.likes.all %}liked{% endif %}" data-post-id="{{ quack.id }}">
-                                        <i class="bi { 'bi-heart-fill' if user in quack.likes.all else 'bi-heart' }"></i> {{ quack.total_likes }}
+                                        <i class="bi { 'bi-heart-fill text-warning' if user in quack.likes.all else 'bi-heart' }"></i> {{ quack.total_likes }}
                                     </button>
                                 </div>
                             </article>
@@ -236,6 +232,8 @@
                             <li class="list-group-item"><i class="bi bi-dot"></i>Reestilização da Página de Usuário</li>
                             <li class="list-group-item"><i class="bi bi-dot"></i>Reestilização da Página de Post</li>
                             <li class="list-group-item"><i class="bi bi-dot"></i>Curtidas em Posts</li>
+                            <li class="list-group-item"><i class="bi bi-dot"></i>Seguir usuários</li>
+                            <li class="list-group-item"><i class="bi bi-dot"></i>Selo de verificação <i class="bi bi-patch-check-fill text-warning"></i></li>
                         </ul>
                     </div>
                 </div>
@@ -296,7 +294,7 @@
         document.querySelectorAll('.like-button').forEach(button => {
             const liked = button.classList.contains('liked')
             const icon = button.querySelector('i');
-            icon.className = liked ? 'bi bi-heart-fill' : 'bi bi-heart';
+            icon.className = liked ? 'bi bi-heart-fill text-warning' : 'bi bi-heart';
             
             button.addEventListener('click', function() {
                 const postId = this.dataset.postId;
@@ -312,7 +310,7 @@
                         alert('Você precisa estar logado para curtir posts.')
                     } else {
                         this.classList.toggle('liked', data.liked)
-                        const iconClass = data.liked ? 'bi bi-heart-fill' : 'bi bi-heart'
+                        const iconClass = data.liked ? 'bi bi-heart-fill text-warning' : 'bi bi-heart'
                         this.querySelector('i').className = iconClass;
                         this.querySelector('i').nextSibling.textContent = ` ${data.total_likes}`
                     }

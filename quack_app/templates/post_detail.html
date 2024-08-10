@@ -9,9 +9,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         body {
-            background-image: url("https://i.pinimg.com/originals/dc/b8/34/dcb83428c8d5e1c5410b6befe4365364.png");
-            background-size: cover;
-            background-repeat: no-repeat;
+            background-image: url("../../media/background/back4.png");
+            background-repeat: repeat;
         }
         #card-post{
             width: 800px;
@@ -24,10 +23,6 @@
             background: none;
             border: none;
             cursor: pointer;
-        }
-
-        .like-button.liked i {
-            color: rgb(255, 234, 0);
         }
         @media (width < 576px) {
             #card-post{
@@ -46,7 +41,7 @@
                 <a href="{% url 'profile' handle=post.user.handle %}" class="d-flex text-decoration-none link-dark mb-3">
                     <img class="rounded-circle me-3" src="{{ post.user.profile_pic.url }}" width="55px" alt="Foto de Perfil">
                     <div class="d-flex flex-column">
-                        <strong class="fs-5 d-inline-block text-truncate">{{ post.user.name }}</strong>
+                        <strong class="fs-5 d-inline-block text-truncate">{{ post.user.name }} {% if post.user.is_staff %}<i class="bi bi-patch-check-fill text-warning"></i>{% endif %}</strong>
                         <label class="fs-6 d-inline-block text-truncate">@{{ post.user.handle }}</label>
                     </div>
                 </a>
@@ -54,7 +49,7 @@
                 <div class="d-flex justify-content-between counters">
                     <span class="quack-time me-3 text-secondary">{{ post.created_at|date:"d/m/Y H:i" }}</span>
                     <button class="like-button {% if user in post.likes.all %}liked{% endif %}" data-post-id="{{ post.id }}">
-                        <i class="bi { 'bi-heart-fill' if user in post.likes.all else 'bi-heart' }"></i> {{ post.total_likes }}
+                        <i class="bi { 'bi-heart-fill text-warning' if user in post.likes.all else 'bi-heart' }"></i> {{ post.total_likes }}
                     </button>
                 </div>
             </article>
@@ -78,7 +73,7 @@
                         <a href="{% url 'profile' handle=user.handle %}" class="d-flex text-decoration-none link-dark mb-3">
                             <img class="rounded-circle me-3" src="{{ comment.user.profile_pic.url }}" width="55px" alt="Foto de Perfil">
                             <div class="d-flex flex-column">
-                                <strong class="fs-5 d-inline-block text-truncate">{{ comment.user.name }}</strong>
+                                <strong class="fs-5 d-inline-block text-truncate">{{ comment.user.name }} {% if comment.user.is_staff %}<i class="bi bi-patch-check-fill text-warning"></i>{% endif %}</strong>
                                 <label class="fs-6 d-inline-block text-truncate">@{{ comment.user.handle }}</label>
                             </div>
                         </a>
@@ -103,7 +98,7 @@
         document.querySelectorAll('.like-button').forEach(button => {
             const liked = button.classList.contains('liked')
             const icon = button.querySelector('i');
-            icon.className = liked ? 'bi bi-heart-fill' : 'bi bi-heart';
+            icon.className = liked ? 'bi bi-heart-fill text-warning' : 'bi bi-heart';
             
             button.addEventListener('click', function() {
                 const postId = this.dataset.postId;
@@ -119,7 +114,7 @@
                         alert('Você precisa estar logado para curtir posts.')
                     } else {
                         this.classList.toggle('liked', data.liked)
-                        const iconClass = data.liked ? 'bi bi-heart-fill' : 'bi bi-heart'
+                        const iconClass = data.liked ? 'bi bi-heart-fill text-warning' : 'bi bi-heart'
                         this.querySelector('i').className = iconClass;
                         this.querySelector('i').nextSibling.textContent = ` ${data.total_likes}`
                     }
