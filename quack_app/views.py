@@ -28,6 +28,7 @@ def profile(request, handle):
     user = get_object_or_404(User, handle=handle)
     quacks = Post.objects.filter(user=user).order_by("-created_at")
     comments = Comment.objects.filter(user=user).order_by("-created_at")
+    liked = Post.objects.filter(likes=user).order_by("-created_at")
     is_following = request.user.is_authenticated and request.user.is_following(user)
     is_followed = request.user.is_authenticated and request.user.is_followed_by(user)
     return render(
@@ -39,6 +40,7 @@ def profile(request, handle):
             "comments": comments,
             "is_following": is_following,
             "is_followed": is_followed,
+            "liked": liked,
         },
     )
 
@@ -83,6 +85,5 @@ def follow_user(request, handle):
 @login_required
 def unfollow_user(request, handle):
     user_to_unfollow = get_object_or_404(User, handle=handle)
-    print(user_to_unfollow)
     request.user.unfollow(user_to_unfollow)
     return redirect("profile", handle=handle)
