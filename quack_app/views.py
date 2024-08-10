@@ -1,6 +1,7 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from .models import User, Post, PostForm, Comment, CommentForm
 
 
@@ -28,6 +29,7 @@ def profile(request, handle):
     user = get_object_or_404(User, handle=handle)
     quacks = Post.objects.filter(user=user).order_by("-created_at")
     comments = Comment.objects.filter(user=user).order_by("-created_at")
+    liked = Post.objects.filter(likes=user).order_by("-created_at")
     is_following = request.user.is_authenticated and request.user.is_following(user)
     is_followed = request.user.is_authenticated and request.user.is_followed_by(user)
     return render(
@@ -39,6 +41,7 @@ def profile(request, handle):
             "comments": comments,
             "is_following": is_following,
             "is_followed": is_followed,
+            "liked": liked,
         },
     )
 
@@ -73,6 +76,26 @@ def like_post(request, post_id):
     return JsonResponse({"error": "Not authenticated"}, status=401)
 
 
+def search_users(request):
+    query = request.GET.get('q', '')
+    if query:
+        users = User.objects.filter(
+            Q(handle__icontains=query) | Q(name__icontains=query)
+        )[:10]
+        results = []
+        for user in users:
+            results.append({
+                'name': user.name,
+                'handle': user.handle,
+                'profile_pic_url': user.profile_pic.url,
+                'is_staff': user.is_staff
+            })
+
+    else:
+        results = []
+    return JsonResponse(results, safe=False)
+
+
 @login_required
 def follow_user(request, handle):
     user_to_follow = get_object_or_404(User, handle=handle)
@@ -83,6 +106,5 @@ def follow_user(request, handle):
 @login_required
 def unfollow_user(request, handle):
     user_to_unfollow = get_object_or_404(User, handle=handle)
-    print(user_to_unfollow)
     request.user.unfollow(user_to_unfollow)
     return redirect("profile", handle=handle)

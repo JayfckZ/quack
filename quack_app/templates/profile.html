@@ -164,7 +164,7 @@
                                 <a href="{% url 'post_detail' post_id=quack.id %}" class="d-flex text-decoration-none link-dark mb-3">
                                     <img class="rounded-circle me-3" src="{{ quack.user.profile_pic.url }}" width="55px" alt="Foto de Perfil">
                                     <div class="d-flex flex-column">
-                                        <strong class="fs-5 d-inline-block text-truncate">{{ quack.user.name }} {% if user.is_staff %}<i class="bi bi-patch-check-fill text-warning"></i>{% endif %}</strong>
+                                        <strong class="fs-5 d-inline-block text-truncate">{{ quack.user.name }} {% if quack.user.is_staff %}<i class="bi bi-patch-check-fill text-warning"></i>{% endif %}</strong>
                                         <label class="fs-6 d-inline-block text-truncate">@{{ quack.user.handle }}</label>
                                     </div>
                                 </a>
@@ -180,9 +180,9 @@
                                     </button>
                                 </div>
                             </article>
-                        {% empty %}
-                            <p>Nenhum post disponível.</p>
-                        {% endfor %}
+                    {% empty %}
+                        <p>Nenhum post disponível.</p>
+                    {% endfor %}
                 </div>
                 <div class="tab-pane" id="coments">
                     {% for comment in comments %}
@@ -190,7 +190,7 @@
                                 <a href="{% url 'post_detail' post_id=comment.post.id %}" class="d-flex text-decoration-none link-dark mb-3">
                                     <img class="rounded-circle me-3" src="{{ comment.user.profile_pic.url }}" width="55px" alt="Foto de Perfil">
                                     <div class="d-flex flex-column">
-                                        <strong class="fs-5 d-inline-block text-truncate">{{ comment.user.name }} {% if user.is_staff %}<i class="bi bi-patch-check-fill text-warning"></i>{% endif %}</strong>
+                                        <strong class="fs-5 d-inline-block text-truncate">{{ comment.user.name }} {% if comment.user.is_staff %}<i class="bi bi-patch-check-fill text-warning"></i>{% endif %}</strong>
                                         <label class="fs-6 d-inline-block text-truncate">@{{ comment.user.handle }}</label>
                                     </div>
                                 </a>
@@ -204,12 +204,30 @@
                                     <span class="quack-time me-3 text-secondary">{{ comment.created_at|date:"d/m/Y H:i" }}</span>
                                 </div>
                             </article>
-                        {% empty %}
-                            <p>Nenhum comentário disponível.</p>
-                        {% endfor %}
+                    {% empty %}
+                        <p>Nenhum comentário disponível.</p>
+                    {% endfor %}
                 </div>
                 <div class="tab-pane" id="curtidas">
-                    <h2>Curtidas</h2>
+                    {% for like in liked %}
+                        <article class="shadow-sm p-3 mb-2 bg-body-tertiary rounded">
+                                <a href="{% url 'post_detail' post_id=like.id %}" class="d-flex text-decoration-none link-dark mb-3">
+                                    <img class="rounded-circle me-3" src="{{ like.user.profile_pic.url }}" width="55px" alt="Foto de Perfil">
+                                    <div class="d-flex flex-column">
+                                        <strong class="fs-5 d-inline-block text-truncate">{{ like.user.name }} {% if like.user.is_staff %}<i class="bi bi-patch-check-fill text-warning"></i>{% endif %}</strong>
+                                        <label class="fs-6 d-inline-block text-truncate">@{{ like.user.handle }}</label>
+                                    </div>
+                                </a>
+                                <a class="text-decoration-none link-dark" href="{% url 'post_detail' post_id=like.id %}">
+                                    <p class="m-0">{{ like.content|linebreaksbr }}</p>
+                                </a>
+                                <div class="d-flex justify-content-end counters">
+                                    <span class="quack-time me-3 text-secondary">{{ like.created_at|date:"d/m/Y H:i" }}</span>
+                                </div>
+                            </article>
+                    {% empty %}
+                        <p>Nenhum post disponível.</p>
+                    {% endfor %}
                 </div>
             </div>
         </div>
