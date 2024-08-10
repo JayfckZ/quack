@@ -18,6 +18,10 @@ class Post(models.Model):
     def __str__(self):
         return f"{self.user.handle} postou {self.content}"
 
+class PostForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = ["content"]
 
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

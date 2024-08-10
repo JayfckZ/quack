@@ -9,9 +9,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         body {
-            background-image: url("https://i.pinimg.com/originals/dc/b8/34/dcb83428c8d5e1c5410b6befe4365364.png");
-            background-size: cover;
-            background-repeat: no-repeat;
+            background-image: url("../../media/background/back4.png");
+            background-repeat: repeat;
         }
         .container {
             overflow-x: hidden;
@@ -26,12 +25,18 @@
             color: black !important;
         }
         #card-profile{
-            width: 800px;
+            max-width: 1000px;
+            width: 100%;
             min-height: 100vh;
+        }
+        .like-button {
+            background: none;
+            border: none;
+            cursor: pointer;
         }
         @media (width < 576px) {
             #card-profile{
-                width: 300px;   
+                width: 94%;   
             }
             #profilepic {
                 width: 100px !important;
@@ -55,33 +60,90 @@
             <header class="d-flex align-items-end">
                 <img id="profilepic" class="rounded-circle me-3" src="{{ user.profile_pic.url }}" alt="Foto de Perfil" width="150" height="150">
                 <div>
-                    <strong id="username" class="d-block h2 text-nowrap">{{ user.name }}</strong>
+                    <strong id="username" class="d-block h2 text-nowrap">{{ user.name }} {% if user.is_staff %}<i class="bi bi-patch-check-fill text-warning"></i>{% endif %}</strong>
                     <p id="userhandle" class="fw-light d-block h3">@{{ user.handle }}</p>
                 </div>
             </header>
-            <p class="row mt-4 text-break">
-                {{ user.bio }}
+            <p class="row m-0 my-4 text-break">
+                {{ user.bio|linebreaksbr  }}
             </p>
 
             <div class="row text-body-secondary">
-                <div class="col-lg-3">
-                    <i class="bi bi-geo-alt me-1"></i> <span>{{ user.location }}</span>
-                </div>
-                <div class="col-lg-3">
-                    <i class="bi bi-cake2 me-1"></i> <span>{{ user.birth_date|date:"d/m/Y" }}</span>
-                </div>
+                {% if user.location %}
+                    <div class="col-lg-3">
+                        <i class="bi bi-geo-alt me-1"></i> <span>{{ user.location }}</span>
+                    </div>
+                {% endif %}
+                {% if user.birth_date %}
+                    <div class="col-lg-3">
+                        <i class="bi bi-cake2 me-1"></i> <span>{{ user.birth_date|date:"d/m/Y" }}</span>
+                    </div>
+                {% endif %}
                 <div class="col-lg-6">
                     <i class="bi bi-calendar-week me-1"></i> <span>Se juntou ao Quack em {{ user.date_joined|date:"m/Y" }}</span>
-                </li>
+                </div>
             </div>
-            <div class="row pt-4">
-                <p class="col-4 col-md-2 m-0">
-                    <strong>{{ user.total_following }}</strong> Seguindo
-                </p>
-                <p class="col-4 col-md-2 m-0">
-                    <strong>{{ user.total_followers }}</strong> Seguidores
-                </p>
+            {% if request.user != user %}
+                {% if is_following %}
+                    <form action="{% url 'unfollow_user' user.handle %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-warning text-dark fw-bold m-0 mt-2">Deixar de Seguir</button>
+                    </form>
+                {% else %}
+                    <form action="{% url 'follow_user' user.handle %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-warning fw-bold m-0 mt-2">Seguir</button>
+                    </form>
+                {% endif %}
+            {% endif %}
+            {% if is_followed %}
+                <div class="text-body-secondary">
+                    <i class="bi bi-person-plus"></i> <span>Este usuário segue você</span>
+                </div>
+            {% endif %}
+            <div class="row pt-2">
+                <div class="dropdown col-5 col-md-3 col-lg-2 m-0">
+                    <a href="" class="col-5 col-md-3 col-lg-2 m-0  text-decoration-none text-dark" data-bs-toggle="dropdown">
+                        <strong>{{ user.total_following }}</strong> Seguindo
+                    </a>
+                    <ul class="dropdown-menu text-small shadow" data-popper-placement="bottom" style="position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate(0px, -34px);">
+                        {% for following in user.user_following.all %}
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="{% url 'profile' handle=following.handle %}">
+                                    <img class="rounded-circle me-3" src="{{ following.profile_pic.url }}" alt="Foto de Perfil" width="35" height="35">
+                                    <div class="align-items-end">
+                                        <strong class="d-block text-nowrap">{{ following.name }} {% if following.is_staff %}<i class="bi bi-patch-check-fill text-warning"></i>{% endif %}</strong>
+                                        <p class="fw-light d-block m-0">@{{ following.handle }}</p>
+                                    </div>
+                                </a>
+                            </li>
+                        {% empty %}
+                            <p>Este usuário não segue ninguém</p>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="dropdown col-5 col-md-3 col-lg-2 m-0">
+                    <a href="" class="col-5 col-md-3 col-lg-2 m-0 drop-toggle text-decoration-none text-dark" data-bs-toggle="dropdown">
+                        <strong>{{ user.total_followers }}</strong> Seguidores
+                    </a>
+                    <ul class="dropdown-menu text-small shadow" data-popper-placement="bottom" style="position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate(0px, -34px);">
+                        {% for follower in user.user_followers.all %}
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="{% url 'profile' handle=follower.handle %}">
+                                    <img class="rounded-circle me-3" src="{{ follower.profile_pic.url }}" alt="Foto de Perfil" width="35" height="35">
+                                    <div class="align-items-end">
+                                        <strong class="d-block text-nowrap">{{ follower.name }} {% if follower.is_staff %}<i class="bi bi-patch-check-fill text-warning"></i>{% endif %}</strong>
+                                        <p class="fw-light d-block m-0">@{{ follower.handle }}</p>
+                                    </div>
+                                </a>
+                            </li>
+                        {% empty %}
+                            <p>Este usuário não é seguido por ninguém</p>
+                        {% endfor %}
+                    </ul>
+                </div>
             </div>
+            
 
             <ul class="row ror-cols-3 nav nav-underline text-center text-dark text-warning mt-4 p-0">
                 <li class="col nav-item">
@@ -102,20 +164,20 @@
                                 <a href="{% url 'post_detail' post_id=quack.id %}" class="d-flex text-decoration-none link-dark mb-3">
                                     <img class="rounded-circle me-3" src="{{ quack.user.profile_pic.url }}" width="55px" alt="Foto de Perfil">
                                     <div class="d-flex flex-column">
-                                        <strong class="fs-5 d-inline-block text-truncate">{{ quack.user.name }}</strong>
+                                        <strong class="fs-5 d-inline-block text-truncate">{{ quack.user.name }} {% if user.is_staff %}<i class="bi bi-patch-check-fill text-warning"></i>{% endif %}</strong>
                                         <label class="fs-6 d-inline-block text-truncate">@{{ quack.user.handle }}</label>
                                     </div>
                                 </a>
                                 <a class="text-decoration-none link-dark" href="{% url 'post_detail' post_id=quack.id %}">
-                                    <p class="m-0">{{ quack.content }}</p>
+                                    <p class="m-0">{{ quack.content|linebreaksbr }}</p>
                                 </a>
                                 <div class="d-flex justify-content-end counters">
                                     <div class="me-3">
                                         <i class="bi bi-chat-right-text"></i> {{ quack.total_comments }}
                                     </div>
-                                    <div>
-                                        <i class="bi bi-heart"></i> {{ quack.total_likes }}
-                                    </div>
+                                    <button class="like-button {% if request.user in quack.likes.all %}liked{% endif %}" data-post-id="{{ quack.id }}">
+                                        <i class="bi { 'bi-heart-fill text-warning' if request.user in quack.likes.all else 'bi-heart' }"></i> {{ quack.total_likes }}
+                                    </button>
                                 </div>
                             </article>
                         {% empty %}
@@ -128,7 +190,7 @@
                                 <a href="{% url 'post_detail' post_id=comment.post.id %}" class="d-flex text-decoration-none link-dark mb-3">
                                     <img class="rounded-circle me-3" src="{{ comment.user.profile_pic.url }}" width="55px" alt="Foto de Perfil">
                                     <div class="d-flex flex-column">
-                                        <strong class="fs-5 d-inline-block text-truncate">{{ comment.user.name }}</strong>
+                                        <strong class="fs-5 d-inline-block text-truncate">{{ comment.user.name }} {% if user.is_staff %}<i class="bi bi-patch-check-fill text-warning"></i>{% endif %}</strong>
                                         <label class="fs-6 d-inline-block text-truncate">@{{ comment.user.handle }}</label>
                                     </div>
                                 </a>
@@ -136,7 +198,7 @@
                                     <span class="text-secondary">
                                         Comentando no post de @{{ comment.post.user.handle }}
                                     </span>
-                                    <p class="m-0">{{ comment.content }}</p>
+                                    <p class="m-0">{{ comment.content|linebreaksbr }}</p>
                                 </a>
                                 <div class="d-flex justify-content-end counters">
                                     <span class="quack-time me-3 text-secondary">{{ comment.created_at|date:"d/m/Y H:i" }}</span>
@@ -157,5 +219,52 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.like-button').forEach(button => {
+            const liked = button.classList.contains('liked')
+            const icon = button.querySelector('i');
+            icon.className = liked ? 'bi bi-heart-fill text-warning' : 'bi bi-heart';
+            
+            button.addEventListener('click', function() {
+                const postId = this.dataset.postId;
+                fetch(`/like_post/${postId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert('Você precisa estar logado para curtir posts.')
+                    } else {
+                        this.classList.toggle('liked', data.liked)
+                        const iconClass = data.liked ? 'bi bi-heart-fill text-warning' : 'bi bi-heart'
+                        this.querySelector('i').className = iconClass;
+                        this.querySelector('i').nextSibling.textContent = ` ${data.total_likes}`
+                    }
+                })
+                .catch(error => console.error('Erro ao processar a solicitação:', error))
+            })
+        })
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';')
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim()
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1))
+                        break
+                    }
+                }
+            }
+            return cookieValue
+        }
+    })
+
+    </script>
 </body>
 </html>
