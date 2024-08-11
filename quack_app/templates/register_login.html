@@ -59,16 +59,26 @@
                             </div>
                             <div class="form-text mb-3" id="userhelp">Seu nome de usuário deve ser único.</div>  
                             <input required type="email" name="email" class="form-control mb-3" placeholder="Email">
-                            <input required type="password" name="password1" class="form-control mb-3" placeholder="Senha">
-                            <input required type="password" name="password2" class="form-control mb-3" placeholder="Confirme sua senha">
+                            <input required type="password" id="password1" name="password1" class="form-control" placeholder="Senha">
+                            <div class="form-text mb-3" id="userhelp">Sua senha deve ter ao menos 8 caracteres, contendo letras <strong>e</strong> números.</div> 
+                            <input required type="password" id="password2" name="password2" class="form-control mb-3" placeholder="Confirme sua senha">
                             <div class="d-flex justify-content-center align-items-center">
-                                <button class="btn btn-warning" type="submit" name="register">Resgistrar-se</button>
+                                <button class="btn btn-warning" type="submit" id="registerButton" name="register">Resgistrar-se</button>
                             </div>
                         </form>
                     </div>
                     <div class="tab-pane" id="login">
                         <form class="mx-5 mt-4" method="POST">
                             {% csrf_token %}
+                            {% if messages %}
+                                <div class="alert alert-danger">
+                                    {% for message in messages %}
+                                        {% if 'login' in message.tags %}
+                                            {{ message }}
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
                             <div class="input-group mb-3">
                                 <span class="input-group-text">@</span>
                                 <input required type="text" name="handle" class="form-control" placeholder="Seu usuário" aria-describedby="userhelp">
@@ -88,5 +98,25 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/cropperjs/dist/cropper.min.js"></script>
+    <script>
+        function validatePasswords() {
+            var password1 = document.getElementById('password1');
+            var password2 = document.getElementById('password2');
+            var registerButton = document.getElementById('registerButton')
+
+            if ((password1.value !== password2.value) || (password1.value.length < 8) || (!/(?=.*\d)(?=.*[a-zA-Z])/.test(password1.value))) {
+                password1.classList.add("is-invalid");
+                password2.classList.add("is-invalid");
+                registerButton.disabled = true;
+            } else {
+                password1.classList.remove("is-invalid");
+                password2.classList.remove("is-invalid");
+                registerButton.disabled = false;
+            }
+        };
+
+        document.getElementById('password1').addEventListener('input', validatePasswords);
+        document.getElementById('password2').addEventListener('input', validatePasswords);
+    </script>
 </body>
 </html>

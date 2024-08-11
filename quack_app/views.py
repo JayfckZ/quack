@@ -23,12 +23,19 @@ def register_login(request):
             if password1 != password2:
                 messages.error(request, "As senhas não coincidem.")
                 return render(request, "register_login.html")
-
+            
+            if User.objects.filter(email=email).exists():
+                messages.error(request, "Este e-mail já está cadastrado.")
+                return render(request, "register_login.html")
+            
+            if User.objects.filter(handle=handle).exists():
+                messages.error(request, "Este nome de usuário já está em uso.")
+                return render(request, "register_login.html")
+            
             try:
                 user = User.objects.create_user(name=name, handle=handle, email=email, password=password1)
                 user.save()
 
-                # Faz o login automático do usuário
                 login(request, user)
                 return redirect("edit")
             except Exception as e:
@@ -37,10 +44,20 @@ def register_login(request):
         elif "login" in request.POST:
             handle = request.POST.get("handle")
             password = request.POST.get("password")
+            
+            try:
+                user = User.objects.get(handle=handle)
+            except User.DoesNotExist:
+                messages.error(request, "Usuário não encontrado.", extra_tags='login')
+                return render(request, "register_login.html")
+            
             user = authenticate(request, handle=handle, password=password)
             if user is not None:
                 login(request, user)
                 return redirect("home")
+            else:
+                messages.error(request, "Credenciais inválidas.", extra_tags='login')
+                return render(request, "register_login.html")
     else:
         return render(request, "register_login.html")
 
