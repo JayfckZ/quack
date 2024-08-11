@@ -64,6 +64,9 @@
         textarea {
         resize: none;
         }
+        img {
+            object-fit: cover;
+        }
         @media (width < 992px) {
             * {
                 overflow-x: clip;
@@ -148,7 +151,7 @@
                     <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2" data-popper-placement="top" style="position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate(0px, -34px);">
                         <li><a class="dropdown-item bg-quack" href="" data-bs-toggle="modal" data-bs-target="#modalPost"><i class="bi bi-pencil me-1"></i></i>Novo Quack</a></li>
                         <li><a class="dropdown-item" href="{% url 'profile' handle=request.user.handle %}"><i class="bi bi-person-circle me-1"></i>Perfil</a></li>
-                        <li><a class="dropdown-item" href=""><i class="bi bi-gear me-1"></i>Configurações</a></li>
+                        <li><a class="dropdown-item" href="{% url 'edit' %}"><i class="bi bi-gear me-1"></i>Configurações de perfil</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="bi bi-box-arrow-in-left me-1"></i>Sair</a></li>
                     </ul>
@@ -243,7 +246,7 @@
                     <i id="back" class="btn bi bi-arrow-left d-lg-none"></i>
                     <div class="d-flex align-items-center"> 
                         <a class="p-1 bg-quack d-lg-none link-dark rounded d-flex text-decoration-none fw-bold" href="" data-bs-toggle="modal" data-bs-target="#modalPost"><i class="bi bi-pencil me-1"></i></i>Postar</a>
-                        <a class="mx-4 d-lg-none text-dark fs-5" href=""><i class="bi bi-gear"></i></a>
+                        <a class="mx-4 d-lg-none text-dark fs-5" href="{% url 'edit' %}"><i class="bi bi-gear"></i></a>
                         <a class="d-lg-none text-danger fs-5" href="{% url 'logout' %}"><i class="bi bi-box-arrow-in-left"></i></a>
                     </div>
                 </div>
@@ -271,6 +274,7 @@
                             <li class="list-group-item"><i class="bi bi-dot"></i>Ver curtidas</li>
                             <li class="list-group-item"><i class="bi bi-dot"></i>Pesquisa de usuários</li>
                             <li class="list-group-item"><i class="bi bi-dot"></i>Página de login e registro</li>
+                            <li class="list-group-item"><i class="bi bi-dot"></i>Página de edição e exclusão de usuário</li>
                         </ul>
                     </div>
                 </div>

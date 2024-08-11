@@ -1,9 +1,11 @@
+import json
 from django.contrib import messages
 from django.shortcuts import redirect, render, get_object_or_404
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth import login, authenticate, logout, update_session_auth_hash
+from datetime import datetime
 from quack_app.forms import UserRegistrationForm, UserLoginForm
 from .models import User, Post, PostForm, Comment, CommentForm
 
@@ -18,29 +20,44 @@ def register_login(request):
             password1 = request.POST.get("password1")
             password2 = request.POST.get("password2")
             
-            # Verifica se as senhas são iguais
             if password1 != password2:
                 messages.error(request, "As senhas não coincidem.")
                 return render(request, "register_login.html")
-
-        # Cria o novo usuário
+            
+            if User.objects.filter(email=email).exists():
+                messages.error(request, "Este e-mail já está cadastrado.")
+                return render(request, "register_login.html")
+            
+            if User.objects.filter(handle=handle).exists():
+                messages.error(request, "Este nome de usuário já está em uso.")
+                return render(request, "register_login.html")
+            
             try:
                 user = User.objects.create_user(name=name, handle=handle, email=email, password=password1)
                 user.save()
 
-                # Faz o login automático do usuário
                 login(request, user)
-                return redirect("home")
+                return redirect("edit")
             except Exception as e:
                 messages.error(request, f"Ocorreu um erro ao criar o usuário: {e}")
                 return render(request, "register_login.html")
         elif "login" in request.POST:
             handle = request.POST.get("handle")
             password = request.POST.get("password")
+            
+            try:
+                user = User.objects.get(handle=handle)
+            except User.DoesNotExist:
+                messages.error(request, "Usuário não encontrado.", extra_tags='login')
+                return render(request, "register_login.html")
+            
             user = authenticate(request, handle=handle, password=password)
             if user is not None:
                 login(request, user)
                 return redirect("home")
+            else:
+                messages.error(request, "Credenciais inválidas.", extra_tags='login')
+                return render(request, "register_login.html")
     else:
         return render(request, "register_login.html")
 
@@ -92,6 +109,44 @@ def profile(request, handle):
             "liked": liked,
         },
     )
+
+@login_required
+def edit(request):
+    user = get_object_or_404(User, handle=request.user.handle)
+    if request.method == "POST":
+        if "update" in request.POST:
+            name = request.POST.get("name")
+            bio = request.POST.get("bio")
+            local = request.POST.get("local")
+            birth = request.POST.get("birth")
+
+            try:
+                user.name = name
+                user.bio = bio
+                user.location = local
+                if birth:
+                    user.birth_date = datetime.strptime(birth, '%Y-%m-%d').date()
+                if 'profile_pic' in request.FILES:
+                    user.profile_pic = request.FILES['profile_pic']
+                user.save()
+                return redirect("profile", handle=user.handle)
+            except Exception as e:
+                messages.error(request, f"Ocorreu um erro ao editar o usuário: {e}")
+                return render(request, "edit.html")
+        
+        elif "delete-account" in request.POST:
+            email = request.POST.get("delete-email")
+            password = request.POST.get("delete-password")
+
+            if user.email == email and user.check_password(password):
+                user.delete()
+                messages.success(request, "Sua conta foi excluída com sucesso.")
+                logout(request)
+                return redirect("home")
+            else:
+                messages.error(request, "E-mail ou senha incorretos.")
+    
+    return render(request, "edit.html", {'user': user})
 
 
 @login_required
