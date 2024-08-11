@@ -117,7 +117,17 @@ def edit(request):
                 messages.error(request, f"Ocorreu um erro ao editar o usuário: {e}")
                 return render(request, "edit.html")
         
-        
+        elif "delete-account" in request.POST:
+            email = request.POST.get("delete-email")
+            password = request.POST.get("delete-password")
+
+            if user.email == email and user.check_password(password):
+                user.delete()
+                messages.success(request, "Sua conta foi excluída com sucesso.")
+                logout(request)
+                return redirect("home")
+            else:
+                messages.error(request, "E-mail ou senha incorretos.")
     
     return render(request, "edit.html", {'user': user})
 

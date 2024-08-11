@@ -71,7 +71,7 @@
                 <div>
                     <div class="d-flex align-items-center mb-1">
                         <label for="username">Nome:</label>
-                        <input id="username" class="d-block ms-2 form-control m-0" name="name" value="{{ user.name }}" style="width: 350px;"></input>{% if user.is_staff %}<i class="bi bi-patch-check-fill text-warning ms-1"></i>{% endif %}
+                        <input id="username" class="d-block ms-2 form-control m-0" name="name" value="{{ user.name }}" style="width: 350px;" required></input>{% if user.is_staff %}<i class="bi bi-patch-check-fill text-warning ms-1"></i>{% endif %}
                     </div>
                     <div class="d-flex align-items-center mb-1">
                         <label for="username">Usuário:</label>
@@ -137,16 +137,16 @@
                         </div>
                         <div class="modal-body">
                             <div class="form-floating">
-                                <input type="email" class="form-control mb-2" name="delete-email" id="delete-email">
+                                <input type="email" class="form-control mb-2" name="delete-email" id="delete-email" required>
                                 <label for="delete-email">E-mail</label>
                             </div>
                             <div class="form-floating">
-                                <input type="password" class="form-control" name="delete-password" id="delete-password">
+                                <input type="password" class="form-control" name="delete-password" id="delete-password" required>
                                 <label for="delete-password">Senha</label>
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-danger">Excluir</button>
+                            <button type="submit" name="delete-account" class="btn btn-danger">Excluir</button>
                         </div>
                     </div>
                 </div>
