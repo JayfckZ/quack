@@ -87,17 +87,17 @@
                 {% if is_following %}
                     <form action="{% url 'unfollow_user' user.handle %}" method="post">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-outline-warning text-dark fw-bold m-0 mt-2">Deixar de Seguir</button>
+                        <button type="submit" class="btn btn-outline-warning text-dark fw-bold m-0 mt-3">Deixar de Seguir</button>
                     </form>
                 {% else %}
                     <form action="{% url 'follow_user' user.handle %}" method="post">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-warning fw-bold m-0 mt-2">Seguir</button>
+                        <button type="submit" class="btn btn-warning fw-bold m-0 mt-3">Seguir</button>
                     </form>
                 {% endif %}
             {% endif %}
             {% if is_followed %}
-                <div class="text-body-secondary">
+                <div class="text-body-secondary mt-1">
                     <i class="bi bi-person-plus"></i> <span>Este usuário segue você</span>
                 </div>
             {% endif %}
@@ -222,7 +222,12 @@
                                     <p class="m-0">{{ like.content|linebreaksbr }}</p>
                                 </a>
                                 <div class="d-flex justify-content-end counters">
-                                    <span class="quack-time me-3 text-secondary">{{ like.created_at|date:"d/m/Y H:i" }}</span>
+                                    <div class="me-3">
+                                        <i class="bi bi-chat-right-text"></i> {{ like.total_comments }}
+                                    </div>
+                                    <button class="like-button {% if request.user in like.likes.all %}liked{% endif %}" data-post-id="{{ like.id }}">
+                                        <i class="bi { 'bi-heart-fill text-warning' if request.user in like.likes.all else 'bi-heart' }"></i> {{ like.total_likes }}
+                                    </button>
                                 </div>
                             </article>
                     {% empty %}
