@@ -41,7 +41,7 @@ class User(AbstractUser):
     )
     
     location = models.CharField(max_length=100, blank=True)
-    birth_date = models.DateTimeField(null=True, blank=True)
+    birth_date = models.DateField(null=True, blank=True)
     following = models.ManyToManyField(
         "self", symmetrical=False, related_name="user_following", blank=True
     )
@@ -50,7 +50,7 @@ class User(AbstractUser):
     )
 
     objects = UserManager()
-    
+
     USERNAME_FIELD = "handle"
     REQUIRED_FIELDS = ["name", "email"]
 

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quack - Perfil de {{ user.name }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background-image: url("../../media/background/back4.png");
+            background-repeat: repeat;
+        }
+        .container {
+            overflow-x: hidden;
+        }
+        li {
+            list-style: none;
+        }
+        .nav-link.active {
+            color: rgb(255, 193, 7) !important;
+        }
+        .nav-link {
+            color: black !important;
+        }
+        #card-profile{
+            max-width: 1000px;
+            width: 100%;
+        }
+        textarea {
+            resize: none;
+        }
+        #file-input {
+            width: 350px;
+        }
+        img {
+            object-fit: cover;
+        }
+        @media (width < 576px) {
+            #card-profile{
+                width: 94%;   
+            }
+            #profilepic {
+                width: 100px !important;
+                height: 100px !important;
+            }
+            #username{
+                font-size: 18px;
+            }
+            #userhandle{
+                font-size: 16px;
+            }
+            #file-input{
+                width: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <form method="POST" id="card-profile" class="mx-auto bg-light p-4 rounded" enctype="multipart/form-data">
+            {% csrf_token %}
+            <header>
+                <div class="d-flex mb-5 flex-column align-items-center justify-content-center">
+                    <img id="profilepic" class="rounded-circle me-3" src="{{ user.profile_pic.url }}" alt="Foto de Perfil" width="150" height="150">
+                    <input type="file" id="file-input" name="profile_pic" class="form-control form-control-sm mt-2" accept="image/*">
+                </div>
+
+                <div>
+                    <div class="d-flex align-items-center mb-1">
+                        <label for="username">Nome:</label>
+                        <input id="username" class="d-block ms-2 form-control m-0" name="name" value="{{ user.name }}" style="width: 350px;"></input>{% if user.is_staff %}<i class="bi bi-patch-check-fill text-warning ms-1"></i>{% endif %}
+                    </div>
+                    <div class="d-flex align-items-center mb-1">
+                        <label for="username">Usuário:</label>
+                        <p id="userhandle" class="fw-light d-block m-0 ms-2">@{{ user.handle }}</p>
+                    </div>
+                </div>
+            </header>
+            <label for="bio" class="mt-4">Bio:</label>
+            <textarea id="bio" placeholder="Bio..." name="bio" class="row m-0 mb-4 form-control" style="height: 250px;">{{ user.bio  }}</textarea>
+            <label for="local">Localização:</label>
+            <input type="text" class="form-control mb-4" name="local" id="local" placeholder="Localização" value="{{ user.location }}">
+            <label for="birth">Aniversário:</label>
+            <input type="date" class="form-control" id="birth" name="birth" value="{{ user.birth_date|date:'Y-m-d' }}">
+            <div class="d-flex justify-content-center align-items-center mt-4">
+                <a href="{% url 'profile' handle=request.user.handle %}" class="btn btn-outline-danger me-2"><i class="bi bi-x-lg me-1"></i>Cancelar alterações</a>
+                <button type="submit" class="btn btn-warning" name="update"><i class="bi bi-pencil me-1"></i>Atualizar perfil</button>
+            </div>
+        </form>
+        <!-- <form method="POST" id="card-profile" class="mx-auto bg-light p-4 rounded" enctype="multipart/form-data">
+            {% csrf_token %}
+            <h3>Alterar senha</h3>
+            <div class="form-floating">
+                <input type="password" class="form-control mb-4" name="old-password" id="old-password" placeholder="Senha atual">
+                <label for="old-password">Senha atual</label>
+            </div>
+            <div class="form-floating">
+                <input type="password" class="form-control mb-4" name="new-password1" id="new-password1" placeholder="Nova senha">
+                <label for="new-password1">Nova senha</label>
+            </div>
+            <div class="form-floating">
+                <input type="password" class="form-control mb-4" name="new-password2" id="new-password2" placeholder="Confirme a nova senha">
+                <label for="new-password2">Confirme a senha</label>
+            </div>
+            <div class="d-flex justify-content-center align-items-center mt-4">
+                <button type="submit" class="btn btn-warning" name="change"><i class="bi bi-key me-1"></i>Alterar senha</button>
+            </div>
+        </form> -->
+        <form method="POST" id="card-profile" class="mx-auto bg-light p-4 rounded">
+            {% csrf_token %}
+            <h3>Excluir conta</h3>
+            <div class="modal fade" id="confirm1" aria-hidden="true" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalToggleLabel">Tem certeza?</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            Não será possível reverter as ações.
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-bs-target="#confirm2" data-bs-toggle="modal">Desejo excluir minha conta</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="confirm2" aria-hidden="true" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5">Insira seus dados para a exclusão</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-floating">
+                                <input type="email" class="form-control mb-2" name="delete-email" id="delete-email">
+                                <label for="delete-email">E-mail</label>
+                            </div>
+                            <div class="form-floating">
+                                <input type="password" class="form-control" name="delete-password" id="delete-password">
+                                <label for="delete-password">Senha</label>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger">Excluir</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-outline-danger border border-0 text-decoration-underline" type="button" data-bs-target="#confirm1" data-bs-toggle="modal"><i class="bi bi-trash3 me-1"></i>Excluir conta</button>
+        </form>
+    </div> 
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.getElementById('file-input')
+            const profilePic = document.getElementById('profilepic')
+            
+            fileInput.addEventListener('change', function(event) {
+                const file = event.target.files[0]
+                if (file) {
+                    const reader = new FileReader()
+                    
+                    reader.onload = function(e) {
+                        profilePic.src = e.target.result
+                    }
+                    
+                    reader.readAsDataURL(file)
+                }
+            })
+        })
+    </script>
+</body>
+</html>
