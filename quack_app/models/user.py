@@ -1,16 +1,45 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from quack_app.validators import validate_handle
+from imagekit.models import ProcessedImageField
+from imagekit.processors import ResizeToFill
+
+from django.contrib.auth.models import BaseUserManager
+
+class UserManager(BaseUserManager):
+    def create_user(self, handle, email, name, password=None, **extra_fields):
+        if not handle:
+            raise ValueError('O campo handle deve ser definido')
+        if not email:
+            raise ValueError('O campo email deve ser definido')
+        
+        email = self.normalize_email(email)
+        user = self.model(handle=handle, email=email, name=name, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, handle, email, name, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+
+        return self.create_user(handle, email, name, password, **extra_fields)
 
 
 class User(AbstractUser):
+    username = None
     name = models.CharField(max_length=50)
     handle = models.CharField(max_length=30, unique=True, validators=[validate_handle])
     email = models.EmailField(unique=True)
     bio = models.TextField(max_length=255, blank=True)
-    profile_pic = models.ImageField(
-        upload_to="profile_pics/", default="profile_pics/profile_default.jpg"
+    profile_pic = ProcessedImageField(
+        upload_to='profile_pictures/',
+        default="profile_pics/profile_default.jpg",
+        processors=[ResizeToFill(100, 100)],
+        format='JPEG',
+        options={'quality': 60}
     )
+    
     location = models.CharField(max_length=100, blank=True)
     birth_date = models.DateTimeField(null=True, blank=True)
     following = models.ManyToManyField(
@@ -20,6 +49,8 @@ class User(AbstractUser):
         "self", symmetrical=False, related_name="user_followers", blank=True
     )
 
+    objects = UserManager()
+    
     USERNAME_FIELD = "handle"
     REQUIRED_FIELDS = ["name", "email"]
 
@@ -44,7 +75,7 @@ class User(AbstractUser):
 
     def is_followed_by(self, user):
         """Verifica se é seguido pelo usuário"""
-        return user.user_followers.filter(pk=self.pk).exists()
+        return user.user_following.filter(pk=self.pk).exists()
 
     def total_following(self):
         return self.user_following.count()
