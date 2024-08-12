@@ -67,6 +67,11 @@
         img {
             object-fit: cover;
         }
+        #float_button {
+            bottom: 48px;
+            right: 32px;
+            z-index: 1;
+        }
         @media (width < 992px) {
             * {
                 overflow-x: clip;
@@ -178,7 +183,10 @@
             </form>
             
             <section id="home" class="col-lg-6 scroll-col">
-                <div class="container px-5 py-3">
+                <div class="container px-5 py-3 position-relative">
+                    <div id="float_button" class="position-fixed d-lg-none">
+                        <a class="bg-quack text-dark link-dark rounded-circle fs-2 p-4" href="" data-bs-toggle="modal" data-bs-target="#modalPost"><i class="bi bi-pencil"></i></i></a>
+                    </div>
                     <div class="row">
                         <h2 class="titulo">Início</h2>
                         {% for quack in quacks %}
@@ -193,13 +201,16 @@
                                 <a class="text-decoration-none link-dark" href="{% url 'post_detail' post_id=quack.id %}">
                                     <p class="m-0">{{ quack.content|linebreaksbr }}</p>
                                 </a>
-                                <div class="d-flex justify-content-end counters">
-                                    <div class="me-3">
-                                        <i class="bi bi-chat-right-text"></i> {{ quack.total_comments }}
+                                <div class="d-flex justify-content-between align-items-center counters">
+                                    <span class="quack-time me-3 text-secondary fs-6">{{ quack.created_at|date:"d/m/Y H:i" }}</span>  
+                                    <div class="d-flex justify-content-end counters">
+                                        <div class="me-3">
+                                            <i class="bi bi-chat-right-text"></i> {{ quack.total_comments }}
+                                        </div>
+                                        <button class="like-button {% if user in quack.likes.all %}liked{% endif %}" data-post-id="{{ quack.id }}">
+                                            <i class="bi { 'bi-heart-fill text-warning' if user in quack.likes.all else 'bi-heart' }"></i> {{ quack.total_likes }}
+                                        </button>
                                     </div>
-                                    <button class="like-button {% if user in quack.likes.all %}liked{% endif %}" data-post-id="{{ quack.id }}">
-                                        <i class="bi { 'bi-heart-fill text-warning' if user in quack.likes.all else 'bi-heart' }"></i> {{ quack.total_likes }}
-                                    </button>
                                 </div>
                             </article>
                         {% empty %}
@@ -211,6 +222,9 @@
 
             <section id="network" class="col-lg-6 scroll-col d-none">
                 <div class="container px-5 py-3">
+                    <div id="float_button" class="position-fixed d-lg-none">
+                        <a class="bg-quack text-dark link-dark rounded-circle fs-2 p-4" href="" data-bs-toggle="modal" data-bs-target="#modalPost"><i class="bi bi-pencil"></i></i></a>
+                    </div>
                     <div class="row">
                         <h2 class="titulo">Sua rede</h2>
                         {% for quack in network_quacks %}
@@ -225,13 +239,16 @@
                                 <a class="text-decoration-none link-dark" href="{% url 'post_detail' post_id=quack.id %}">
                                     <p class="m-0">{{ quack.content|linebreaksbr }}</p>
                                 </a>
-                                <div class="d-flex justify-content-end counters">
-                                    <div class="me-3">
-                                        <i class="bi bi-chat-right-text"></i> {{ quack.total_comments }}
+                                <div class="d-flex justify-content-between align-items-center counters">
+                                    <span class="quack-time me-3 text-secondary fs-6">{{ quack.created_at|date:"d/m/Y H:i" }}</span>  
+                                    <div class="d-flex justify-content-end counters">
+                                        <div class="me-3">
+                                            <i class="bi bi-chat-right-text"></i> {{ quack.total_comments }}
+                                        </div>
+                                        <button class="like-button {% if user in quack.likes.all %}liked{% endif %}" data-post-id="{{ quack.id }}">
+                                            <i class="bi { 'bi-heart-fill text-warning' if user in quack.likes.all else 'bi-heart' }"></i> {{ quack.total_likes }}
+                                        </button>
                                     </div>
-                                    <button class="like-button {% if user in quack.likes.all %}liked{% endif %}" data-post-id="{{ quack.id }}">
-                                        <i class="bi { 'bi-heart-fill text-warning' if user in quack.likes.all else 'bi-heart' }"></i> {{ quack.total_likes }}
-                                    </button>
                                 </div>
                             </article>
                         {% empty %}
@@ -260,21 +277,11 @@
 
                 <div class="mb-5"></div>
                 <div class="card mt-5">
-                    <div class="card-header">O que há de novo?</div>
+                    <div class="card-header">O que há de novo? <strong>BETA 1.0.98</strong></div>
                     <div class="card-body">
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item"><i class="bi bi-dot"></i>Reestilização da Página Home</li>
-                            <li class="list-group-item"><i class="bi bi-dot"></i>Reestilização da Página de Usuário</li>
-                            <li class="list-group-item"><i class="bi bi-dot"></i>Reestilização da Página de Post</li>
-                            <li class="list-group-item"><i class="bi bi-dot"></i>Curtidas em Posts</li>
-                            <li class="list-group-item"><i class="bi bi-dot"></i>Seguir usuários</li>
-                            <li class="list-group-item"><i class="bi bi-dot"></i>Selo de verificação <i class="bi bi-patch-check-fill text-warning"></i></li>
-                            <li class="list-group-item"><i class="bi bi-dot"></i>Menu de seguindo e seguidores</li>
-                            <li class="list-group-item"><i class="bi bi-dot"></i>Criar post</li>
-                            <li class="list-group-item"><i class="bi bi-dot"></i>Ver curtidas</li>
-                            <li class="list-group-item"><i class="bi bi-dot"></i>Pesquisa de usuários</li>
-                            <li class="list-group-item"><i class="bi bi-dot"></i>Página de login e registro</li>
-                            <li class="list-group-item"><i class="bi bi-dot"></i>Página de edição e exclusão de usuário</li>
+                            <li class="list-group-item"><i class="bi bi-dot"></i>Botão flutuante de Post</li>
+                            <li class="list-group-item"><i class="bi bi-dot"></i>Datas em posts</li>
                         </ul>
                     </div>
                 </div>
