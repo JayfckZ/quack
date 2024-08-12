@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-)na&g^&bcq1haqj#ly^!*axl8q95hio@7kqvr0jytplj1t!wzi
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "quack-production-b68f.up.railway.app"]
 
 AUTH_USER_MODEL = "quack_app.User"
 # Application definition
