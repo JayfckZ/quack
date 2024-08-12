@@ -33,7 +33,7 @@ def register_login(request):
                 return render(request, "register_login.html")
             
             try:
-                user = User.objects.create_superuser(name=name, handle=handle, email=email, password=password1)
+                user = User.objects.create_user(name=name, handle=handle, email=email, password=password1)
                 user.save()
 
                 login(request, user)
