@@ -27,6 +27,9 @@ SECRET_KEY = "django-insecure-)na&g^&bcq1haqj#ly^!*axl8q95hio@7kqvr0jytplj1t!wzi
 DEBUG = True
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "quack-production-b68f.up.railway.app"]
+CSRF_TRUSTED_ORIGINS = [
+    'https://quack-production-b68f.up.railway.app',
+]
 
 AUTH_USER_MODEL = "quack_app.User"
 # Application definition
