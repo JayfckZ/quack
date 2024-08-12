@@ -1,8 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from quack_app.validators import validate_handle
-from imagekit.models import ProcessedImageField
-from imagekit.processors import ResizeToFill
+from imagekit.models import ProcessedImageField # type: ignore
+from imagekit.processors import ResizeToFill # type: ignore
 
 from django.contrib.auth.models import BaseUserManager
 
