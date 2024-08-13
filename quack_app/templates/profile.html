@@ -110,7 +110,7 @@
                         <strong>{{ user.total_following }}</strong> Seguindo
                     </a>
                     <ul class="dropdown-menu text-small shadow" data-popper-placement="bottom" style="position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate(0px, -34px);">
-                        {% for following in user.user_following.all %}
+                        {% for following in followings %}
                             <li>
                                 <a class="dropdown-item d-flex align-items-center" href="{% url 'profile' handle=following.handle %}">
                                     <img class="rounded-circle me-3" src="{{ following.profile_pic.url }}" alt="Foto de Perfil" width="35" height="35">
@@ -130,7 +130,7 @@
                         <strong>{{ user.total_followers }}</strong> Seguidores
                     </a>
                     <ul class="dropdown-menu text-small shadow" data-popper-placement="bottom" style="position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate(0px, -34px);">
-                        {% for follower in user.user_followers.all %}
+                        {% for follower in followers %}
                             <li>
                                 <a class="dropdown-item d-flex align-items-center" href="{% url 'profile' handle=follower.handle %}">
                                     <img class="rounded-circle me-3" src="{{ follower.profile_pic.url }}" alt="Foto de Perfil" width="35" height="35">
