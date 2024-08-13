@@ -19,7 +19,6 @@ services:
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/app
-      - media_volume:/app/media
     ports:
       - 8000:8000
     env_file:
@@ -35,4 +34,3 @@ networks:
 
 volumes:
   postgres_data:
-  media_volume:
