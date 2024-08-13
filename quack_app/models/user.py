@@ -33,7 +33,7 @@ class User(AbstractUser):
     email = models.EmailField(unique=True)
     bio = models.TextField(max_length=255, blank=True)
     profile_pic = ProcessedImageField(
-        upload_to='profile_pictures/',
+        upload_to='profile_pics/',
         default="profile_pics/profile_default.jpg",
         processors=[ResizeToFill(100, 100)],
         format='JPEG',
