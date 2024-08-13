@@ -67,6 +67,17 @@
         img {
             object-fit: cover;
         }
+        #float_button {
+            bottom: 48px;
+            right: 32px;
+            z-index: 1;
+        }
+        @media (width >= 992px) {
+            #btn-post{
+                max-width: 100%;
+                width: 100%;
+            }
+        }
         @media (width < 992px) {
             * {
                 overflow-x: clip;
@@ -167,18 +178,24 @@
                         </div>
                         <div class="modal-body">
                             {% csrf_token %}
-                            <textarea class="form-control" name="{{ form.content.name }}" placeholder="Digite seu post..." style="height: 100px"></textarea>
+                            <textarea class="form-control" name="{{ form.content.name }}" id="postmodal" placeholder="Digite seu post..." style="height: 100px"></textarea>
+                            <div id="geralCount" class="text-secondary">
+                                <small id="charCount">0</small>/300 caracteres
+                            </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-warning">Publicar</button>
+                            <button id="submitButton" type="submit" class="btn btn-warning">Publicar</button>
                         </div>
                     </div>
                 </div>
             </form>
             
             <section id="home" class="col-lg-6 scroll-col">
-                <div class="container px-5 py-3">
+                <div class="container px-5 py-3 position-relative">
+                    <div id="float_button" class="position-fixed d-lg-none">
+                        <a class="bg-quack text-dark link-dark rounded-circle fs-2 p-4" href="" data-bs-toggle="modal" data-bs-target="#modalPost"><i class="bi bi-pencil"></i></i></a>
+                    </div>
                     <div class="row">
                         <h2 class="titulo">Início</h2>
                         {% for quack in quacks %}
@@ -193,13 +210,16 @@
                                 <a class="text-decoration-none link-dark" href="{% url 'post_detail' post_id=quack.id %}">
                                     <p class="m-0">{{ quack.content|linebreaksbr }}</p>
                                 </a>
-                                <div class="d-flex justify-content-end counters">
-                                    <div class="me-3">
-                                        <i class="bi bi-chat-right-text"></i> {{ quack.total_comments }}
+                                <div class="d-flex justify-content-between align-items-center counters">
+                                    <span class="quack-time me-3 text-secondary fs-6">{{ quack.created_at|date:"d/m/Y H:i" }}</span>  
+                                    <div class="d-flex justify-content-end counters">
+                                        <div class="me-3">
+                                            <i class="bi bi-chat-right-text"></i> {{ quack.total_comments }}
+                                        </div>
+                                        <button class="like-button {% if user in quack.likes.all %}liked{% endif %}" data-post-id="{{ quack.id }}">
+                                            <i class="bi { 'bi-heart-fill text-warning' if user in quack.likes.all else 'bi-heart' }"></i> {{ quack.total_likes }}
+                                        </button>
                                     </div>
-                                    <button class="like-button {% if user in quack.likes.all %}liked{% endif %}" data-post-id="{{ quack.id }}">
-                                        <i class="bi { 'bi-heart-fill text-warning' if user in quack.likes.all else 'bi-heart' }"></i> {{ quack.total_likes }}
-                                    </button>
                                 </div>
                             </article>
                         {% empty %}
@@ -211,6 +231,9 @@
 
             <section id="network" class="col-lg-6 scroll-col d-none">
                 <div class="container px-5 py-3">
+                    <div id="float_button" class="position-fixed d-lg-none">
+                        <a class="bg-quack text-dark link-dark rounded-circle fs-2 p-4" href="" data-bs-toggle="modal" data-bs-target="#modalPost"><i class="bi bi-pencil"></i></i></a>
+                    </div>
                     <div class="row">
                         <h2 class="titulo">Sua rede</h2>
                         {% for quack in network_quacks %}
@@ -225,13 +248,16 @@
                                 <a class="text-decoration-none link-dark" href="{% url 'post_detail' post_id=quack.id %}">
                                     <p class="m-0">{{ quack.content|linebreaksbr }}</p>
                                 </a>
-                                <div class="d-flex justify-content-end counters">
-                                    <div class="me-3">
-                                        <i class="bi bi-chat-right-text"></i> {{ quack.total_comments }}
+                                <div class="d-flex justify-content-between align-items-center counters">
+                                    <span class="quack-time me-3 text-secondary fs-6">{{ quack.created_at|date:"d/m/Y H:i" }}</span>  
+                                    <div class="d-flex justify-content-end counters">
+                                        <div class="me-3">
+                                            <i class="bi bi-chat-right-text"></i> {{ quack.total_comments }}
+                                        </div>
+                                        <button class="like-button {% if user in quack.likes.all %}liked{% endif %}" data-post-id="{{ quack.id }}">
+                                            <i class="bi { 'bi-heart-fill text-warning' if user in quack.likes.all else 'bi-heart' }"></i> {{ quack.total_likes }}
+                                        </button>
                                     </div>
-                                    <button class="like-button {% if user in quack.likes.all %}liked{% endif %}" data-post-id="{{ quack.id }}">
-                                        <i class="bi { 'bi-heart-fill text-warning' if user in quack.likes.all else 'bi-heart' }"></i> {{ quack.total_likes }}
-                                    </button>
                                 </div>
                             </article>
                         {% empty %}
@@ -244,8 +270,9 @@
             <aside id="search" class="col-lg fixed-col d-lg-flex d-none flex-column flex-shrink-0 p-3 bg-light" style="width: 280px; height: 100vh;">
                 <div class="d-flex justify-content-between mb-4">
                     <i id="back" class="btn bi bi-arrow-left d-lg-none"></i>
+                    <a id="btn-post" class="p-1 bg-quack d-none d-lg-block link-dark rounded d-flex text-decoration-none fw-bold text-center" href="" data-bs-toggle="modal" data-bs-target="#modalPost"><i class="bi bi-pencil me-1"></i></i>Postar</a>
                     <div class="d-flex align-items-center"> 
-                        <a class="p-1 bg-quack d-lg-none link-dark rounded d-flex text-decoration-none fw-bold" href="" data-bs-toggle="modal" data-bs-target="#modalPost"><i class="bi bi-pencil me-1"></i></i>Postar</a>
+                        <a id="btn-post" class="p-1 bg-quack d-lg-none link-dark rounded d-flex text-decoration-none fw-bold text-center" href="" data-bs-toggle="modal" data-bs-target="#modalPost"><i class="bi bi-pencil me-1"></i></i>Postar</a>
                         <a class="mx-4 d-lg-none text-dark fs-5" href="{% url 'edit' %}"><i class="bi bi-gear"></i></a>
                         <a class="d-lg-none text-danger fs-5" href="{% url 'logout' %}"><i class="bi bi-box-arrow-in-left"></i></a>
                     </div>
@@ -260,21 +287,13 @@
 
                 <div class="mb-5"></div>
                 <div class="card mt-5">
-                    <div class="card-header">O que há de novo?</div>
+                    <div class="card-header">O que há de novo? <strong>BETA 1.0.101.1</strong></div>
                     <div class="card-body">
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item"><i class="bi bi-dot"></i>Reestilização da Página Home</li>
-                            <li class="list-group-item"><i class="bi bi-dot"></i>Reestilização da Página de Usuário</li>
-                            <li class="list-group-item"><i class="bi bi-dot"></i>Reestilização da Página de Post</li>
-                            <li class="list-group-item"><i class="bi bi-dot"></i>Curtidas em Posts</li>
-                            <li class="list-group-item"><i class="bi bi-dot"></i>Seguir usuários</li>
-                            <li class="list-group-item"><i class="bi bi-dot"></i>Selo de verificação <i class="bi bi-patch-check-fill text-warning"></i></li>
-                            <li class="list-group-item"><i class="bi bi-dot"></i>Menu de seguindo e seguidores</li>
-                            <li class="list-group-item"><i class="bi bi-dot"></i>Criar post</li>
-                            <li class="list-group-item"><i class="bi bi-dot"></i>Ver curtidas</li>
-                            <li class="list-group-item"><i class="bi bi-dot"></i>Pesquisa de usuários</li>
-                            <li class="list-group-item"><i class="bi bi-dot"></i>Página de login e registro</li>
-                            <li class="list-group-item"><i class="bi bi-dot"></i>Página de edição e exclusão de usuário</li>
+                            <li class="list-group-item"><i class="bi bi-dot"></i>Botão flutuante de Post</li>
+                            <li class="list-group-item"><i class="bi bi-dot"></i>Datas em posts</li>
+                            <li class="list-group-item"><i class="bi bi-dot"></i>Contador de caracter visível ao fazer posts</li>
+                            <li class="list-group-item"><i class="bi bi-dot"></i>Ordenação alfabética em seguindo e seguidores</li>
                         </ul>
                     </div>
                 </div>
@@ -332,84 +351,102 @@
         })
 
         document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.like-button').forEach(button => {
-            const liked = button.classList.contains('liked')
-            const icon = button.querySelector('i');
-            icon.className = liked ? 'bi bi-heart-fill text-warning' : 'bi bi-heart';
-            
-            button.addEventListener('click', function() {
-                const postId = this.dataset.postId;
-                fetch(`/like_post/${postId}/`, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': getCookie('csrftoken'),
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.error) {
-                        alert('Você precisa estar logado para curtir posts.')
-                    } else {
-                        this.classList.toggle('liked', data.liked)
-                        const iconClass = data.liked ? 'bi bi-heart-fill text-warning' : 'bi bi-heart'
-                        this.querySelector('i').className = iconClass;
-                        this.querySelector('i').nextSibling.textContent = ` ${data.total_likes}`
-                    }
-                })
-                .catch(error => console.error('Erro ao processar a solicitação:', error))
+            const textArea = document.getElementById('postmodal')
+            const charCount = document.getElementById('charCount')
+            const geralCount = document.getElementById('geralCount')
+            const submitButton = document.getElementById('submitButton')
+
+            textArea.addEventListener('input', function() {
+                const currentLength = textArea.value.length
+                charCount.textContent = currentLength
+
+                if (currentLength > 300) {
+                    submitButton.disabled = true
+                    geralCount.classList.add("text-danger")
+                } else {
+                    submitButton.disabled = false
+                    geralCount.classList.remove("text-danger")
+                }
             })
+
+            document.querySelectorAll('.like-button').forEach(button => {
+                const liked = button.classList.contains('liked')
+                const icon = button.querySelector('i');
+                icon.className = liked ? 'bi bi-heart-fill text-warning' : 'bi bi-heart';
+                
+                button.addEventListener('click', function() {
+                    const postId = this.dataset.postId;
+                    fetch(`/like_post/${postId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': getCookie('csrftoken'),
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            alert('Você precisa estar logado para curtir posts.')
+                        } else {
+                            this.classList.toggle('liked', data.liked)
+                            const iconClass = data.liked ? 'bi bi-heart-fill text-warning' : 'bi bi-heart'
+                            this.querySelector('i').className = iconClass;
+                            this.querySelector('i').nextSibling.textContent = ` ${data.total_likes}`
+                        }
+                    })
+                    .catch(error => console.error('Erro ao processar a solicitação:', error))
+                })
+            })
+
+            document.getElementById('user-search-input').addEventListener('input', function() {
+            const query = this.value
+            if (query.length > 0) {
+                fetch(`/search-users/?q=${query}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        let resultsDiv = document.getElementById('search-results')
+                        resultsDiv.innerHTML = ''
+                        if (data.length > 0) {
+                            data.forEach(searchUser => {
+                                console.log(searchUser)
+                                let userDiv = document.createElement('div');
+                                let userHTML = `
+                                    <a class="dropdown-item d-flex align-items-center p-1" href="/profile/${searchUser.handle}">
+                                        <img class="rounded-circle me-1" src="${searchUser.profile_pic_url}" alt="Foto de Perfil" width="35" height="35">
+                                        <div class="align-items-end">
+                                            <strong class="d-block text-truncate">${searchUser.name}`
+                                if (searchUser.is_staff) {
+                                    userHTML += ` <i class="bi bi-patch-check-fill text-warning"></i>`
+                                }
+                                userHTML += `</strong>
+                                            <p class="fw-light d-block m-0 text-truncate">@${searchUser.handle}</p>
+                                        </div>
+                                    </a>`
+                                userDiv.innerHTML = userHTML;
+                                resultsDiv.appendChild(userDiv);
+                            })
+                        } else {
+                            resultsDiv.innerHTML = '<p>Nenhum usuário encontrado.</p>'
+                        }
+                    })
+            } else {
+                document.getElementById('search-results').innerHTML = ''
+            }
         })
 
-        document.getElementById('user-search-input').addEventListener('input', function() {
-        const query = this.value
-        if (query.length > 0) {
-            fetch(`/search-users/?q=${query}`)
-                .then(response => response.json())
-                .then(data => {
-                    let resultsDiv = document.getElementById('search-results')
-                    resultsDiv.innerHTML = ''
-                    if (data.length > 0) {
-                        data.forEach(searchUser => {
-                            console.log(searchUser)
-                            let userDiv = document.createElement('div');
-                            let userHTML = `
-                                <a class="dropdown-item d-flex align-items-center p-1" href="/profile/${searchUser.handle}">
-                                    <img class="rounded-circle me-1" src="${searchUser.profile_pic_url}" alt="Foto de Perfil" width="35" height="35">
-                                    <div class="align-items-end">
-                                        <strong class="d-block text-truncate">${searchUser.name}`
-                            if (searchUser.is_staff) {
-                                userHTML += ` <i class="bi bi-patch-check-fill text-warning"></i>`
-                            }
-                            userHTML += `</strong>
-                                        <p class="fw-light d-block m-0 text-truncate">@${searchUser.handle}</p>
-                                    </div>
-                                </a>`
-                            userDiv.innerHTML = userHTML;
-                            resultsDiv.appendChild(userDiv);
-                        })
-                    } else {
-                        resultsDiv.innerHTML = '<p>Nenhum usuário encontrado.</p>'
-                    }
-                })
-        } else {
-            document.getElementById('search-results').innerHTML = ''
-        }
-    })
-
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';')
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim()
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1))
-                        break
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';')
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim()
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1))
+                            break
+                        }
                     }
                 }
+                return cookieValue
             }
-            return cookieValue
-        }
     })
     </script>
 </body>

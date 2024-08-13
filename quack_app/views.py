@@ -1,4 +1,5 @@
 import json
+from django.utils import timezone
 from django.contrib import messages
 from django.shortcuts import redirect, render, get_object_or_404
 from django.http import JsonResponse
@@ -95,6 +96,8 @@ def profile(request, handle):
     quacks = Post.objects.filter(user=user).order_by("-created_at")
     comments = Comment.objects.filter(user=user).order_by("-created_at")
     liked = Post.objects.filter(likes=user).order_by("-created_at")
+    followings = user.user_following.all().order_by('handle')
+    followers = user.user_followers.all().order_by('handle')
     is_following = request.user.is_authenticated and request.user.is_following(user)
     is_followed = request.user.is_authenticated and request.user.is_followed_by(user)
     return render(
@@ -107,6 +110,8 @@ def profile(request, handle):
             "is_following": is_following,
             "is_followed": is_followed,
             "liked": liked,
+            "followings": followings,
+            "followers": followers,
         },
     )
 
@@ -155,13 +160,34 @@ def post_detail(request, post_id):
     comments = post.comments.order_by("-created_at")
     form = CommentForm(request.POST or None)
 
-    if form.is_valid():
-        comment = form.save(commit=False)
-        comment.post = post
-        comment.user = request.user
-        comment.save()
-        return redirect("post_detail", post_id=post_id)
+    if request.method == "POST":
+        if "delete-post" in request.POST and post.user == request.user:
+            post.delete()
+            messages.success(request, "O post foi apagado com sucesso.")
+            return redirect("home")
+        
+        # elif "delete-comment" in request.POST:
+        #     print(request.POST)
+        #     comment_id = request.POST.get("comment_id")
+        #     comment_user = request.POST.get("comment_user")
+        #     comment_content = request.POST.get("comment_content")
 
+        #     try:
+        #         comment_to_delete = Comment.objects.filter(user=comment_user, content=comment_content, post=post)
+        #         print(comment_to_delete)
+        #         comment_to_delete.delete()
+        #         messages.success(request, "Comentário excluído com sucesso.")
+        #     except Comment.DoesNotExist:
+        #         messages.error(request, "Comentário não encontrado.")
+        #     return redirect("post_detail", post_id=post_id)
+        
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.user = request.user
+            comment.save()
+            return redirect("post_detail", post_id=post_id)
+        
     return render(
         request, "post_detail.html", {"post": post, "comments": comments, "form": form}
     )

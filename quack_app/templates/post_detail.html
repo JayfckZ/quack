@@ -37,9 +37,32 @@
 <body>
     <div class="container">
         <div id="card-post" class="mx-auto bg-light p-4 rounded">
-            <a href="{% url 'home' %}" class="text-dark link-dark my-1 d-flex flex-row-reverse">
-                <i class="bi bi-house fs-4 end"></i>
-            </a>
+            <div class="d-flex flex-row-reverse">
+                <a href="{% url 'home' %}" class="text-dark link-dark my-1">
+                    <i class="bi bi-house fs-4 end"></i>
+                </a>
+                {% if request.user == post.user or request.user.is_staff %}
+                    <button class="btn btn-outline-danger border border-0 fs-5 me-4 text-decoration-underline" type="button" data-bs-target="#confirm" data-bs-toggle="modal"><i class="bi bi-trash3"></i></button>
+                    <form method="POST" class="modal fade" id="confirm" aria-hidden="true" tabindex="-1">
+                        {% csrf_token %}
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5">Tem certeza?</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Não será possível reverter as ações.
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" name="delete-post" class="btn btn-danger">Desejo excluir o quack</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                {% endif %}
+            </div>
+
             <article class="p-3 mb-2">
                 <a href="{% url 'profile' handle=post.user.handle %}" class="d-flex text-decoration-none link-dark mb-3">
                     <img class="rounded-circle me-3" src="{{ post.user.profile_pic.url }}" width="55px" alt="Foto de Perfil">
@@ -49,11 +72,16 @@
                     </div>
                 </a>
                 <p class="my-3">{{ post.content|linebreaksbr }}</p>
-                <div class="d-flex justify-content-between counters">
-                    <span class="quack-time me-3 text-secondary">{{ post.created_at|date:"d/m/Y H:i" }}</span>
-                    <button class="like-button {% if user in post.likes.all %}liked{% endif %}" data-post-id="{{ post.id }}">
-                        <i class="bi { 'bi-heart-fill text-warning' if user in post.likes.all else 'bi-heart' }"></i> {{ post.total_likes }}
-                    </button>
+                <div class="d-flex justify-content-between align-items-center counters">
+                    <span class="quack-time me-3 text-secondary fs-6">{{ post.created_at|date:"d/m/Y H:i" }}</span>  
+                    <div class="d-flex justify-content-end counters">
+                        <div class="me-3">
+                            <i class="bi bi-chat-right-text"></i> {{ post.total_comments }}
+                        </div>
+                        <button class="like-button {% if user in post.likes.all %}liked{% endif %}" data-post-id="{{ post.id }}">
+                            <i class="bi { 'bi-heart-fill text-warning' if user in post.likes.all else 'bi-heart' }"></i> {{ post.total_likes }}
+                        </button>
+                    </div>
                 </div>
             </article>
 
@@ -73,13 +101,39 @@
                 {% endif %}
                 {% for comment in comments %}
                     <article class="p-3 mb-2">
-                        <a href="{% url 'profile' handle=user.handle %}" class="d-flex text-decoration-none link-dark mb-3">
-                            <img class="rounded-circle me-3" src="{{ comment.user.profile_pic.url }}" width="55px" alt="Foto de Perfil">
-                            <div class="d-flex flex-column">
-                                <strong class="fs-5 d-inline-block text-truncate">{{ comment.user.name }} {% if comment.user.is_staff %}<i class="bi bi-patch-check-fill text-warning"></i>{% endif %}</strong>
-                                <label class="fs-6 d-inline-block text-truncate">@{{ comment.user.handle }}</label>
-                            </div>
-                        </a>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <a href="{% url 'profile' handle=user.handle %}" class="d-flex text-decoration-none link-dark mb-3">
+                                <img class="rounded-circle me-3" src="{{ comment.user.profile_pic.url }}" width="55px" alt="Foto de Perfil">
+                                <div class="d-flex flex-column">
+                                    <strong class="fs-5 d-inline-block text-truncate">{{ comment.user.name }} {% if comment.user.is_staff %}<i class="bi bi-patch-check-fill text-warning"></i>{% endif %}</strong>
+                                    <label class="fs-6 d-inline-block text-truncate">@{{ comment.user.handle }}</label>
+                                </div>
+                            </a>
+                            <!-- {% if request.user == comment.user or request.user.is_staff %}
+                                <button class="btn btn-outline-danger border border-0 fs-5 me-4 text-decoration-underline" type="button" data-bs-target="#confirmcomment" data-bs-toggle="modal"><i class="bi bi-trash3"></i></button>
+                                <form method="POST" class="modal fade" id="confirmcomment" aria-hidden="true" tabindex="-1">
+                                    {% csrf_token %}
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5">Tem certeza?</h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Não será possível reverter as ações.
+                                                <input type="hidden" name="comment-content" value="{{ comment.content }}">
+                                                <input type="hidden" name="comment-user" value="{{ comment.user }}">
+                                                <input type="hidden" name="comment-id" value="{{ comment.id }}">
+                                                <input type="hidden" name="comment-content" value="{{ comment.content }}">
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="submit" name="delete-comment" class="btn btn-danger">Desejo excluir o comentário</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            {% endif %} -->
+                        </div>
                         <p class="my-3">{{ comment.content|linebreaksbr }}</p>
                         <div class="d-flex justify-content-between counters">
                             <span class="quack-time me-3 text-secondary">{{ comment.created_at|date:"d/m/Y H:i" }}</span>
